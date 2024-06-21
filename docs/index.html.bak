@@ -13,6 +13,11 @@
   <script>
     window.$docsify = {
 	loadNavbar: true, //-- https://docsify.js.org/#/custom-navbar 自定义目录
+<<<<<<< HEAD
+	//repo: 'https://2014team.github.io/note/',
+=======
+	repo: 'https://2014team.github.io/note/',
+>>>>>>> a8b784fb92d9a6009d13c824c46dd42ff7b94bb8
 	alias: {
       '/.*/_sidebar.md': '/_sidebar.md'
     },
@@ -26,6 +31,18 @@
 	  }, // 字数统计
 	 search: {
       maxAge: 86400000, // 过期时间，单位为毫秒，默认一天
+<<<<<<< HEAD
+      paths: 'auto', // 明确指定搜索路径
+      placeholder: '搜索',
+      noData: '找不到结果',
+      depth: 3, // 搜索标题的深度，默认值为 2
+      // 调试信息
+      namespace: 'docsify-search',
+	  hideOtherSidebarContent: true, // 是否隐藏其他侧边栏内容
+	  loadSidebar: true
+    }
+
+=======
       paths: ['auto'], // 明确指定搜索路径
       placeholder: '搜索',
       noData: '找不到结果',
@@ -37,6 +54,7 @@
 	  subMaxLevel: 2,
       sidebarDisplayLevel: 1
     }
+>>>>>>> a8b784fb92d9a6009d13c824c46dd42ff7b94bb8
   };
 
 </script>
@@ -44,7 +62,11 @@
   <!-- Docsify v4 -->
   <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
   <!-- 全文搜索 -->
+<<<<<<< HEAD
+   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+=======
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+>>>>>>> a8b784fb92d9a6009d13c824c46dd42ff7b94bb8
    <!--图片缩放 -->
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
  <!--字数统计-->
