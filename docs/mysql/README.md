@@ -12,25 +12,83 @@
 | 数据库管理系统 | 操纵和管理数据库的大型软件                                   | DataBase Management System(DBMS) |
 | SOL            | 操作关系型数据库的编程语言，定义了一套操作关系型数据库统一标准 | Structured Query Language (SQL)  |
 
-#### **Mysql数据库安装-window**
+**关系型数据库(RDBMS)**
 
-**[下载](https://dev.mysql.com/downloads/windows/installer/8.0.html)**
+概念:建立在关系模型基础上，由多张相互连接的二维表组成的数据库。
 
+**特点:**
 
+1. 使用表存储数据，格式统一，便于维护
 
-![](image/1718957646940.jpg)
+2. 使用SQL语言操作，标准统一，使用方便
 
+   
 
-
-
-
-
-
-
+![](image/1718962769662.jpg)
 
 ### SQL
 
+#### SQL通用语法
 
+1. SQL语句可以单行或多行书写，以分号结尾。
+2. SQL语句可以使用空格/缩进来增强语句的可读性
+3. MySOL数据库的SQL语句不区分大小写，关键字建议使用大写。
+4. 注释:
+   单行注释: --注释内容 或#注释内容(MySQL特有)
+   多行注释: /*注释内容 */
+
+#### SQL分类
+
+| 分类 | 全称                       | 说明                                                   |
+| ---- | -------------------------- | ------------------------------------------------------ |
+| DDL  | Data Definition Langugge   | 数据定义语言，用来定义数据库对象(数据库，表，字段)     |
+| DML  | Data Manipulation Language | 数据操作语言，用来对数据库表中的数据进行增删改         |
+| DQL  | Data Query Language        | 数据查询语言，用来查询数据库中表的记录                 |
+| DCL  | Data Control Language      | 数据控制语言，用来创建数据库用户、控制数据库的访问权限 |
+
+#### DDL
+
+查询
+
+查询所有数据库
+
+```sql
+SHOW DATABASES ;
+```
+
+查询当前数据库
+
+```sql
+SELECT DATABASE() ;
+```
+
+创建
+
+```sql
+CREATE DATABASE [IF NOTEXISTS]数据库名[DEFAULT CHARSET字符集][COLLATE 排序规则)
+```
+
+删除
+
+```sql
+DROP DATABASE[IF EXSTS]数库名;
+```
+
+使用
+
+```sql
+USE 数据库名;
+```
+
+#### DML
+
+
+
+#### DQL
+
+
+
+#### DCL
 
 ### 函数
 
