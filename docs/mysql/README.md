@@ -57,35 +57,30 @@
 
 ```
 SHOW DATABASES;
-
 ```
 
    查询当前数据库
 
 ```
  SELECT DATABASE();
-
 ```
 
 **2.1.2 创建**
 
 ```
  CREATE DATABASE [IF NOT EXISTS]  数据库名 [DEFAULT CHARSET 字符集] [COLLATE  排序规则];
-
 ```
 
 **2.1.3 删除**
 
 ```
 DROP DATABASE [IF EXISTS] 数据库名;
-
 ```
 
 **2.1.4 切换数据库**
 
 ```
  USE 数据库名;
-
 ```
 
 **2.2 表操作-查询**
@@ -94,21 +89,18 @@ DROP DATABASE [IF EXISTS] 数据库名;
 
 ```
 SHOW TABLES;
-
 ```
 
 **2.2.2 查询表结构**
 
 ```
   DESC 表名;
-
 ```
 
 **2.2.3 查询指定表的创建表语句**
 
 ```
 SHOW CREATE TABLE 表名;
-
 ```
 
 **2.3表操作-创建**
@@ -120,7 +112,6 @@ CREATE TABLE 表名(
   ....
   字段n  字段n类型  [COMMENT 字段n注释]
 )[COMMENT 表注释];
-
 ```
 
 **2.4、表操作-修改**
@@ -129,44 +120,38 @@ CREATE TABLE 表名(
 
 ```
 ALTER TABLE 表名  ADD  字段名称  类型(长度) [COMMENT 注释][约束];
-
 ```
 
 **2.4.2 修改数据类型**
 
 ```
 ALTER TABLE 表名  MODIFY 字段名称 新数据类型(长度)
-
 ```
 
 **2.4.3 修改字段名和字段类型**
 
 ```
 ALTER TABLE 表名  CHANGE  旧字段名  新字段名 类型(长度)[COMMENT 注释][约束];
-
 ```
 
 **2.4.4 修改表名**
 
 ```
 ALTER TABLE 表名 RENAME TO 新表名;
-
 ```
 
 **2.5、表操作-删除**
 
-**2.5.1 删除字段**
+2.5.1 删除字段
 
 ```
 ALTER 表名  DROP 字段名称;
-
 ```
 
 **2.5.2 删除表**
 
 ```
 DROP TABLE [IF EXISTS] 表名;
-
 ```
 
 **2.5.3 删除指定表，并重新创建表**
