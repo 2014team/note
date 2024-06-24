@@ -18,7 +18,7 @@ https://www.netcraft.com/
 
 （1） 隐藏
 
-![1710776760741.png](image\1710776760741.png)
+![1710776760741.png](image\1710776760741.png data-lightbox="image-set")
 
 （2） 翻墙
 

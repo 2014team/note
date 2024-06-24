@@ -7,6 +7,19 @@
   <meta name="description" content="Description">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+   <!-- 引入 Lightbox CSS -->
+ <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet">
+
+
+ <style>
+    .markdown-section img {
+      max-width: 100%;
+      height: auto;
+      cursor: pointer;
+    }
+  </style>
+
+
 </head>
 <body>
   <div id="app">加载中</div>
@@ -52,7 +65,14 @@
 
   };
 
+  
+
+
 </script>
+
+
+
+
 
   <!-- Docsify v4 -->
   <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
@@ -69,6 +89,24 @@
  <script src="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/docsify-sidebar-collapse.min.js"></script>
  <!--代码块复制-->
   <script src="//unpkg.com/docsify-copy-code"></script>
+  <!-- 引入 Lightbox JS -->
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox-plus-jquery.min.js"></script>
+
+
+<script>
+    window.$docsify.plugins = [].concat(window.$docsify.plugins, function(hook) {
+      hook.doneEach(function() {
+        const images = document.querySelectorAll('.markdown-section img');
+        images.forEach((img) => {
+          const link = document.createElement('a');
+          link.href = img.src;
+          link.setAttribute('data-lightbox', 'image-set');
+          img.parentNode.insertBefore(link, img);
+          link.appendChild(img);
+        });
+      });
+    });
+  </script>
 
 </body>
 </html>
