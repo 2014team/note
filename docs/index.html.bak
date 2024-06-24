@@ -17,7 +17,7 @@
 	alias: {
       '/.*/_sidebar.md': '/_sidebar.md'
     },
-	  name: '学习笔记',
+	  name: '笔记',
 	   ga: 'UA-XXXXX-Y',// 谷歌统计
 	  count:{
 		countable:true,
@@ -67,7 +67,7 @@
  <script src="//unpkg.com/docsify-count/dist/countable.js"></script>
 
  <script src="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/docsify-sidebar-collapse.min.js"></script>
-
+ <!--代码块复制-->
   <script src="//unpkg.com/docsify-copy-code"></script>
 
 </body>
