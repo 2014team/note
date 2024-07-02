@@ -1058,3 +1058,737 @@ InnoDB 将数据和索引组织成固定大小的数据页，默认大小为 16K
 
 
 InnoDB 存储引擎通过逻辑存储结构（表空间、页、段和区）有效地管理数据和索引。这种结构提供了高效的数据访问、事务管理和崩溃恢复能力，使得 InnoDB 成为广泛使用的关系型数据库管理系统的首选存储引擎之一。
+
+### 索引
+
+索引概述
+
+索引(indax)是帮助MySQL高效获取数据的数据结构(有序)。在数据之外，数据库系统还维护着满足特定查找算法的数据结构，这些数据结构以某种方式引用(指向)数据， 这样就可以在这些数据结构上实现高级查找算法，这种数据结构就是索引。
+
+**优势**  
+
+提高数据检索的效率，降低数据库的IO成本。
+
+通过索引列对数据进行排序，降低数据排序的成本，降低CPU的消耗。
+
+**劣势**
+
+索引列也是会占用空间的。
+
+索引大大提高了查询效率，同时却也降低更新表的速度，如对表进行INSERT、UPDATE、DELETE时，效率降低。
+
+#### 索引结构
+
+MySQL的索引是在存储引擎层实现的，不同的存储引擎有不同的结构，主要包含以下几种:
+
+| **索引结构**        | **描述**                                                     |
+| ------------------- | ------------------------------------------------------------ |
+| B+Tree索引          | 最常见的索引类型，大部分引擎都支持 B+ 树索引                 |
+| Hash索引            | 底层数据结构是用哈希表实现的,只有精确匹配索引列的查询才有效,不支持范围查询 |
+| R-tree(空间索引)    | 空间索引是MyISAM引擎的一个特殊索引类型，主要用于地理空间数据类型，通常使用较少 |
+| Full-text(全文索引) | 是一种通过建立倒排索引,快速匹配文档的方式。类似于Lucene,Solr,ES |
+
+**存储引擎对数据结构的支持**
+
+![1719884780421.jpg](image\1719884780421.jpg)
+
+
+
+**二叉树（Binary Tree）**是一种树形数据结构，其中每个节点最多有两个子节点，通常称为左子节点和右子节点。二叉树广泛应用于计算机科学领域，尤其是在搜索算法、排序算法、表达式解析和其他数据结构中。
+
+![1719884804467.png](image\1719884804467.png)
+
+**基本概念**
+
+**节点（Node）**：二叉树中的每一个元素称为节点。
+
+**根节点（Root Node）**：二叉树的顶端节点，没有父节点。
+
+**子节点（Child Node）**：一个节点的直接后继节点。二叉树中每个节点最多有两个子节点。
+
+**父节点（Parent Node）**：具有子节点的节点。
+
+**叶节点（Leaf Node）**：没有子节点的节点。
+
+**内部节点（Internal Node）**：至少有一个子节点的节点。
+
+**深度（Depth）**：节点到根节点的边数。
+
+**高度（Height）**：从节点到叶节点的最长路径上的边数。
+
+**层（Level）**：节点的深度加1。
+
+
+
+**B树（B-Tree）**是一种自平衡的树数据结构，广泛应用于数据库和文件系统中，用于高效地进行排序、搜索、插入和删除操作。B树的特点是节点可以有多个子节点，且在节点中存储了多个键值。以下是关于B树的详细介绍及Java实现示例
+
+![1719884813431.png](image\1719884813431.png)
+
+**B树的基本概念**
+
+**节点（Node）**：B树中的每个节点可以有多个子节点和多个键。
+
+**阶（Order）**：B树的阶（通常用t表示）决定了每个节点的最小和最大子节点数。每个节点最多可以有2t - 1个键和2t个子节点，至少有t-1个键和t个子节点。
+
+**根节点（Root Node）**：B树的顶端节点。
+
+**内部节点（Internal Node）**：具有子节点的节点。
+
+**叶****节点（Leaf Node）**：没有子节点的节点。
+
+
+
+**B树的性质**
+
+每个节点最多有2t - 1个键。
+
+每个节点最少有t - 1个键（除了根节点，根节点可以只有一个键）。
+
+每个内部节点至少有t个子节点。
+
+所有叶节点都在同一层。
+
+
+
+**B+树（B+ Tree）**是B树的变种，广泛应用于数据库和文件系统中。与B树不同，B+树的所有数据都存储在叶子节点，内部节点只存储索引，这使得B+树的查询效率更高，特别是范围查询。
+
+![1719884820525.png](image\1719884820525.png)
+
+**B+树的基本概念**
+
+**节点（Node）**：B+树中的每个节点可以有多个子节点和多个键。
+
+**阶（Order）**：B+树的阶（通常用t表示）决定了每个节点的最小和最大子节点数。
+
+**根节点（Root Node）**：B+树的顶端节点。
+
+**内部节点（Internal Node）**：仅存储索引的节点。
+
+**叶节点（Leaf Node）**：存储所有数据并按顺序链接的节点。
+
+
+
+**B+树的性质**
+
+每个节点最多有2t - 1个键。
+
+每个节点最少有t - 1个键（除了根节点，根节点可以只有一个键）。
+
+所有叶节点都在同一层，且通过链表相连，便于范围查询。
+
+
+
+**Hash索引特点**
+
+Hash索引只能用于对等比较(=，in)，不支持范围查询(between，>，<，....)
+
+无法利用索引完成排序操作
+
+查询效率高，通常只需要一次检索就可以了，效率通常要高于B+tree索引
+
+
+
+**存储引擎支持**
+
+在MySQL中，支持hash索引的是Memory引擎，而innoDB中具有自适应hash功能，hash索引是存储引擎根据B+Tree索引在指定条件下自动构建的。
+
+
+
+**为什么InnoDB存储引擎选择使用B+tree索引结构?**
+
+相对于二叉树，层级更少，搜索效率高;
+
+对于B-tree，无论是叶子节点还是非叶子节点，都会保存数据，这样导致一页中存储的键值减少，指针跟着减少，要同样保存大量数据，只能增加树的高度，导致性能降低;
+
+相对Hash索引，B+tree支持范围匹配及排序操作;
+
+
+
+算法演示 ： https://www.cs.usfca.edu/~galles/visualization/Algorithms.html
+
+#### 索引分类
+
+| **分类** | **含义**                                             | **特点**                 | **关键字** |
+| -------- | ---------------------------------------------------- | ------------------------ | ---------- |
+| 主键索引 | 针对于表中主键创建的索引                             | 默认自动创建，只能有一个 | PRIMARY    |
+| 唯一索引 | 避免同一个表中某数据列中的值重复                     | 可以有多个               | UNIQUE     |
+| 常规索引 | 快速定位特定数据                                     | 可以有多个               |            |
+| 全文索引 | 全文索引查找的是文本中的关键词，而不是比较索引中的值 | 可以有多个               | FULLTEXT   |
+
+在InnoDB存储引擎中，根据索引的存储形式，又可以分为以下两种:
+
+| **分类**                  | **含义**                                                   | **特点**            |
+| ------------------------- | ---------------------------------------------------------- | ------------------- |
+| 聚集索引(Clustered Index) | 将数据存储与索引放到了一块，索引结构的叶子节点保存了行数据 | 必须有,而且只有一个 |
+| 二级索引(Secondary Index) | 将数据与索引分开存储，索引结构的叶子节点关联的是对应的主键 | 可以存在多个        |
+
+**聚集索引选取规则:**
+
+如果存在主键，主键索引就是聚集索引。
+
+如果不存在主键，将使用第一个唯一(UNIQUE)索引作为聚集索引。
+
+如果表没有主键，或没有合适的唯一索引，则nnoDB会自动生成一个rowid作为隐藏的聚集索引。
+
+#### 索引语法
+
+**创建索引**
+
+```
+CREATE [UNIOUE|FULLTEXT] INDEX index name ON table name (index col name....);
+```
+
+**查看索引**
+
+```
+SHOW INDEX FROM table_name;
+```
+
+**删除索引**
+
+```
+DROP INDEX index_name ON table_name;
+```
+
+#### SQL性能分析
+
+**SOL执行频率**
+
+MySQL客户端连接成功后，通过 show[session | global] status命令可以提供服务器状态信息。通过如下指令，可以查看当前数据库的INSERT、UPDATE、DELETE、SELECT的访问频次:
+
+```
+SHOW GLOBAL STATUS LIKE 'com_______'
+```
+
+**慢查询日志**
+
+慢查询日志记录了所有执行时间超过指定参数(long_query_time，单位:秒，默认10秒)的所有SQL语句的日志。MySOL的慢查询日志默认没有开启，需要在MySQL的配置文件(/etc/my.cnf)中配置如下信息:
+
+```
+# 开启MySOL慢日志查询开关
+slow query log=1
+# 设置慢日志的时间为2秒，SOL语句执行时间超过2秒，就会视为慢查询，记录慢查询日志
+long query time=2
+```
+
+配置完毕之后，通过以下指令重新启动MySQL服务器进行测试，查看慢日志文件中记录的信息/var/lib/mysql/localhost-slow.log。
+
+**profile 性能分析**
+
+
+
+show profiles 能够在做SQL优化时帮助我们了解时间都耗费到哪里去了。通过have_profiling参数，能够看到当前MySQL是否支持profile操作:
+
+```
+SELECT @@have_profiling;
+```
+
+默认profiling是关闭的，可以通过set语句在session/glqpal级别开启profiling:
+
+```
+SET profiling=1;
+```
+
+执行一系列的业务SOL的操作，然后通过如下指令查看指令的执行耗时:
+
+```
+#查看每一条SQL的耗时基本情况show profiles;
+#查看指定query id的5QL语句各个阶段的耗时情况
+show profile for query query_id:
+#查看指定query id的5QL语句CPU的使用情况
+show profile cpu for query query_id;
+```
+
+**explain执行计划**
+
+EXPLAIN 执行计划各字段含义:
+
+**ld**
+
+select查询的序列号，表示查询中执行select子句或者是操作表的顺序(id相同，执行顺序从上到下;id不同，值越大，越先执行)。
+
+**select_type**
+
+表示 SELECT 的类型，常见的取值有 SIMPLE(简单表，即不使用表连接或者子查询)、PRIMARY(主查询，即外层的查询)UNION(UNION 中的第二个或者后面的查询语句)、SUBOUERY(SELECT/WHERE之后包含了子查询)等
+
+**type**
+
+表示连接类型，性能由好到差的连接类型为NULL、system、const、eg_ref、ref、range、index、all
+
+**possible_key**
+
+显示可能应用在这张表上的索引，一个或多个
+
+**Key**
+
+实际使用的索引，如果为NULL，则没有使用索引。
+
+**Key_len**
+
+表示索引中使用的字节数，该值为索引字段最大可能长度，并非实际使用长度，在不损失精确性的前提下，长度越短越好。
+
+**rows**
+
+MySQL认为必须要执行查询的行数，在innodb引擎的表中，是一个估计值，可能并不总是准确的。
+
+**filtered**
+
+表示返回结果的行数占需读取行数的百分比，filtered 的值越大越好，
+
+#### 索引使用
+
+**最左前缀法则**
+
+如果索引了多列(联合索引)，要遵守最左前缀法则。最左前缀法则指的是査询从索引的最左列开始，并且不跳过索引中的列。如果跳跃某一列，索引将部分失效(后面的字段索引失效)
+
+```
+示例  组合索引字段(profession,age,status)
+explain select * from tb_user where profession ='软件工程" and age = 31 and status = '0'; --走索引
+explain select * from tb_user where profession="软件工程' and age =31; --走索引
+explain select * from tb_user where profession='软件工程';--走索引
+explain select * from tb_user where age = 3l and status= '0';--索引失效
+explain select * from tb_user where status='0'; --索引失效
+```
+
+**范围查询**
+
+联合索引中，出现范围查询(>，<)，范围查询右侧的列索引失效
+
+```
+explain select * from tb_user where profession='软件工程' and age > 30 and status ='0';--status失效
+explain select * from tb_user where profession ='软件工程' and age >= 30 and status='0';--全部生效
+```
+
+**索引失效情况**
+
+
+
+索引列运算：不要在索引列上进行运算操作，索引将失效
+
+字符串不加引号：字符串类型字段使用时，不加引号，索引将失效
+
+模糊查询：如果仅仅是尾部模糊匹配，索引不会失效。如果是头部模糊匹配，索引失效。
+
+示例 索引字段profession
+
+```
+explain select *from tb_user  where profession like "软件%' --走索引
+explain select *from tb_user  where profession like '%工程' --失效
+explain select * from tb_user  where profession like '%工%  --失效
+```
+
+**or连接的条件**
+
+
+
+用or分割开的条件，如果or前的条件中的列有索引，而后面的列中没有索引，那么涉及的索引都不会被用到。
+
+-- id主键是索引，age不是索引
+
+```
+explain select * from tb_user where id= 10 or age = 23; -- 不走索引
+-- phone，age 索引
+explain select * from tb_user  where phone='17799990017' or age = 23; -- 走索引
+```
+
+**数据分布影响** ：如果MySQL评估使用索引比全表更慢，则不使用索引。
+
+![1719885772508.png](image\1719885772508.png)
+
+![1719885779952.png](image\1719885779952.png)
+
+**SQL提示**
+
+SQL提示，是优化数据库的一个重要手段，简单来说，就是在SQL语句中加入一些人为的提示来达到优化操作的目的。
+
+例如一个字段创建多个索引，认为指定走那个索引。
+
+
+
+**use index** -- 指定索引
+
+```
+explain select * from tb_user use index(idx_user_pro) where profession='软件工程';
+```
+
+**ignore index** -- 忽略索引
+
+```
+explain select * from tb_user ignore index(idx_user_pro) where profession=软件工程';
+```
+
+**force index** --强制索引
+
+```
+explain select * from tb_user force index(idx_user_pro) where profession=软件工程’
+```
+
+**覆盖索引**
+
+尽量使用覆盖索引(查询使用了索引，并且需要返回的列，在该索引中已经全部能够找到)，减少select*。
+
+--组合索引字段(profession,age,status)
+
+```
+explain select id, profession from tb_user where profession ='软件工程' and age = 31 and status = '0'; -- 走索引
+explain select id,profession,age, status from tb_user where profession= '软件工程' and age= 31 and status = '0';-- 走索引
+explain select id,profession,age, status, name from tb_user where profession ="软件工程' and age= 31 and status = '0'
+explain select * from tb_user where profession='软件工程' and age =31 and status= '0';
+```
+
+说明
+
+using index condition:查找使用了索引，但是需要回表查询数据
+
+using where;using index:查找使用了索引，但是需要的数据都在索引列中能找到，所以不需要回表查询数据
+
+**前缀索引**
+
+当字段类型为字符串(varchar，text等)时，有时候需要索引很长的字符串，这会让索引变得很大，查询时，浪费大量的磁盘I0，影响查询效率。此时可以只将字符串的一部分前缀，建立索引，这样可以大大节约索引空间，从而提高索引效率。
+
+语法
+
+```
+create index idx_xxxx on table name(column(n));
+```
+
+前缀长度
+
+可以根据索引的选择性来决定，而选择性是指不重复的索引值(基数)和数据表的记录总数的比值，索引选择性越高则查询效率越高,唯一索引的选择性是1，这是最好的索引选择性，性能也是最好的。
+
+示例
+
+```
+select count (distinct email)/count(*) from tb_user
+select count (distinct substring(email,1,5))/ count(*) from tb_user
+```
+
+**单列索引与联合索引**
+
+单列索引:即一个索引只包含单个列。
+
+联合索引:即一个索引包含了多个列。
+
+在业务场景中，如果存在多个查询条件，考虑针对于查询字段建立索引时，建议建立联合索引，而非单列索引。
+
+单列索引情况:
+
+```
+explain select id, phone, name from tb_user where phone= '17799990010' and name = "韩信';
+```
+
+
+
+多条件联合查询时，MySQL优化器会评估哪个字段的索引效率更高，会选择该索引完成本次查询。
+
+#### **索引设计原则**
+
+针对于数据量较大，且查询比较频繁的表建立索引。
+
+针对于常作为查询条件(where)、排序(orderby)、分组(group by)操作的字段建立索引。
+
+尽量选择区分度高的列作为索引，尽量建立唯一索引，区分度越高，使用索引的效率越高。
+
+如果是字符串类型的字段，字段的长度较长，可以针对于字段的特点，建立前缀索引。
+
+尽量使用联合索引，减少单列索引，查询时，联合索引很多时候可以覆盖索引，节省存储空间，避免回表，提高查询效率。
+
+要控制索引的数量，索引并不是多多益善，索引越多，维护索引结构的代价也就越大，会影响增删改的效率。
+
+如果索引列不能存储NULL值，请在创建表时使用NOT NULL约束它。当优化器知道每列是否包含NULL值时，它可以更好地确定哪个索引最有效地用于查询。
+
+### 索引优化
+
+#### 插入数据优化
+
+插入数据多条可以使用批量插入。
+
+如果一次性需要插入大批量数据，使用insert语句插入性能较低，此时可以使用MySQL数据库提供的load指令进行插入。操作如下。
+
+\#客户端连接服务端时，加上参数--local-infile
+
+```
+mysql --local-infile -u root -p
+```
+
+\#设置全局参数local_infile为1，开启从本地加载文件导入数据的开关 set global local infile=1;
+
+\#执行load指令将准备好的数据，加载到表结构中
+
+```
+load data local infile '/root/sall.log' into table 'tb_user fields terminated by ',’ lines terminated by '\n' ;
+```
+
+说明：/root/sall.log需要导入数据文件路径 ,  tb_user表名  文件的数据格式为（数据之间以，分割，一行是一条数据）
+
+查看是否支持
+
+```
+SELECT @@local_infile
+```
+
+#### 主键优化
+
+满足业务需求的情况下，尽量降低主键的长度，
+
+插入数据时，尽量选择顺序插入，
+
+选择使用AUTOINCREMENT自增主键尽量不要使用UUID做主键或者是其他自然主键，如身份证号。
+
+
+
+**页分裂**（Page Splitting）是B树（或B+树）索引在插入数据时，遇到某个页已经满了，无法再插入新记录时，所采取的一种处理机制。页分裂的具体过程如下：
+
+1 找到目标页：首先，找到需要插入新记录的页。
+
+2 检查页的空间：检查该页是否有足够的空间来插入新记录。如果没有空间，就需要进行页分裂。
+
+3 创建新页：在原页旁边创建一个新的页。
+
+4 重新分配记录：将原页中的一部分记录移动到新页中。一般是将大约一半的记录移动到新页，以保持平衡。
+
+5 更新指针：更新树结构中的指针，以反映页分裂后的新结构。
+
+
+
+页分裂的主要目的是保持树的平衡，确保查询操作的效率。页分裂会导致数据库的写操作性能下降，因为它涉及到大量的I/O操作和树结构的调整。
+
+
+
+**页合并**（Page Merging）是与页分裂相对应的一种操作。当B树（或B+树）索引中某些页的记录太少，低于一定的阈值时，数据库会将这些记录合并到相邻的页中，以提高空间利用率和查询性能。页合并通常在删除大量记录之后发生
+
+页合并的过程
+
+1 找到目标页：首先，找到记录数量低于阈值的页。
+
+2 检查相邻页：检查相邻的页，看看是否有足够的空间来容纳目标页中的记录。
+
+3 移动记录：将目标页中的记录移动到相邻页中。
+
+4 释放目标页：将目标页释放或标记为可用空间。
+
+5 更新指针：更新树结构中的指针，以反映页合并后的新结构。
+
+
+
+MERGE_THRESHOLD:合并页的阈体，可以自己设置，在创建表或者创建索引时指定。
+
+```
+innodb_page_merge_threshold = 50
+```
+
+这里的 50 表示当一个页中的记录数量低于 50% 时，InnoDB 会尝试进行页合并
+
+#### order by 优化
+
+**Using flesor**:通过表的索引或全表扫描，读取满足条件的数据行，然后在排序缓冲区sonbufter中完成排序操作，所有不是通过索引直接返回排序结果的排序都叫 FileSort 排序。
+
+**Using index**:通过有序索引顺序扫描直接返回有序数据，这种情况即为using index，不需要额外排序，操作效率高。
+
+
+
+根据排序字段建立合适的索引，多字段排序时，也遵循最左前缀法则。
+
+尽量使用覆盖索引。
+
+多字段排序,一个升序一个降序，此时需要注意联合索引在创建时的规则(ASC/DESC)。
+
+如果不可避免的出现filesort，大数据量排序时，可以适当增大排序缓冲区大小sort_buffer_size(默认256k)。
+
+
+
+示例
+
+```
+#没有创建索引时，根据age，phone进行排序
+explain select id,age,phone from tb_user order by age , phone;
+#创建索引
+create index idx_user_age_phone_aa on tb_user(age,phone);
+#创建索引后，根据age,phone进行升序排序
+explain select id,age,phone from tb_user order by age , phone;
+#创建索引后，根据age,phone进行降序排序
+explain select id,age,phone from tb_user order by age desc , phone desc
+
+#根据age,phone进行降序一个升序，一个降序
+explain select id,age,phone from tb_user order by age asc , phone desc;
+#创建索引create, index_idx_user_age_phone_ad on tb_user(age asc ,phone desc);
+#根据age,phone进行降序一个升序，一个降序
+explain select id,age,phone from tb user order by age asc , phone desc;
+```
+
+#### group by优化
+
+在分组操作时，可以通过索引来提高效率，
+
+分组操作时，索引的使用也是满足最左前缀法则的。
+
+示例
+
+```
+#执行分组操作，根据profession字段分组
+explain select profession ,count(*) from tb_user group by profession ;
+#创建索引
+Create index_idx_user_pro_age_sta on tb_user(profession , age , status);
+#执行分组操作，根据profession字段分组
+explain select profession , count(*) from tb_user group by profession;
+#执行分组操作，根据profession字段分组
+explain select profession ,count(") from tb_user group by profession, age;
+```
+
+#### limit 优化
+
+一般分页查询时，通过创建覆盖索引 能够比较好地提高性能，可以通过覆盖索引加子查询形式进行优化。
+
+```
+explain select * from tb_sku t , (select id from tb_sku order by id limit 2000000,10) a where t.id = a.id;
+```
+
+#### count 优化
+
+**count(主键)**
+
+InnoD8 引擎会遍历整张表，把每一行的 主键id 值都取出来，返回给服务层。服务层拿到主键后，直接按行进行累加(主键不可能为nul)。
+
+**count(字段)**
+
+没有not null约束:InnoD8 引擎会遍历整张表把每一行的字段值都取出来，返回给服务层，服务层判断是否为null，不为nul，计数累加。
+
+有not nuul约束:InnoD8 引擎会遍历整张表把每一行的字段值都取出来，返回给服务层，直接按行进行累加。
+
+**count(1)**
+
+InnoDB 引擎遍历整张表，但不取值。服务层对于返回的每一行，放一个数字“1”进去，直接按行进行累加。
+
+**count(\*)**
+
+InnoDB引擎并不会把全部字段取出来，而是专门做了优，不取值，服务层直接按行进行累加
+
+**按照效率排序的话，count(字段)<count(主键id)<count(1)≈ count(*)，所以尽量使用 count(*)。**
+
+update 优化
+
+InnoDB的行锁是针对索引加的锁，不是针对记录加的锁,并且该索引不能失效，否则会从行锁升级为表锁。
+
+尽量根据主键或者索引字段进行数据更新
+
+示例
+
+建议
+
+```
+update student set no='2000100100'where id = 1;
+```
+
+不建议
+
+```
+update student set no='2000100105'where name ='韦一笑',
+```
+
+### 视图
+
+#### 简介 
+
+视图(View)是一种虚拟存在的表。视图中的数据并不在数据库中实际存在，行和列数据来自定义视图的查询中使用的表，并且是在使用视图时动态生成的。
+
+通俗的讲，视图只保存了查询的SQL逻辑，不保存查询结果。所以我们在创建视图的时候，主要的工作就落在创建这条SQL查询语句上。
+
+#### 创建视图语法
+
+```
+CREATE [OR REPLACE] VIEW 视图名称[(列名列表)] AS SELECT 语句[WITH[CASCADED|LOCAL] CHECK OPTION]
+```
+
+#### 查询视图
+
+查看创建视图语句:SHOW CREATE VIEW 视图名称;
+
+查看视图数据:SELECT * FROM 视图名称 ...;
+
+#### 修改视图
+
+**方式一:**
+
+```
+CREATE [OR REPLACE] VIEW 视图名称[(列名列表)] AS SELECT语句[WITH[EASCADED|LOCAL] CHECK OPTION]
+```
+
+**方式二:**
+
+```
+ALTER VIEW 视图名称[(列名列表)]AS SELECT语句[WITH[CASCADED|LOCAL] CHECK OPTION]
+```
+
+#### 删除视图
+
+```
+DROP VIEW [IF EXISTS]视图名称[,视图名称] ...
+```
+
+#### 视图的检查选项
+
+当使用WITH CHECK OPTION子句创建视图时，MySOL会通过视图检查正在更改的每个行，例如 插入，更新，删除，以使其符合视图的定义。MySOL允许基于另一个视图创建视图，它还会检查依赖视图中的规则以保持一致性。
+
+为了确定检查的范围，mysq!提供了两个选项CASCADED和 LOCAL，默认值为 CASCADED。
+
+**CASCADED：**
+
+默认选项。
+
+如果视图的定义包含其他视图，则 CASCADED 会检查所有涉及的视图的权限，确保用户对所有基础表和视图都有适当的权限。
+
+**LOCAL：**
+
+只检查视图本身的权限，而不检查视图引用的其他视图或表的权限。
+
+使用此选项可以避免级联检查权限，适用于您只关心顶层视图权限的情况
+
+
+
+示例
+
+假设有两个表 employees 和 departments，并且已经创建了一个视图 emp_dept_view 来联结这两个表：
+
+```
+CREATE TABLE employees (
+    emp_id INT,
+    emp_name VARCHAR(100),
+    dept_id INT
+);
+
+CREATE TABLE departments (
+    dept_id INT,
+    dept_name VARCHAR(100)
+);
+
+CREATE VIEW emp_dept_view AS
+SELECT e.emp_id, e.emp_name, d.dept_name
+FROM employees e
+JOIN departments d ON e.dept_id = d.dept_id;
+```
+
+现在，我们将创建一个新的视图 dept_summary 来引用 emp_dept_view：
+
+**使用 CASCADED（默认）：**
+
+```
+CREATE VIEW dept_summary AS
+SELECT dept_name, COUNT(emp_id) AS num_employees
+FROM emp_dept_view
+GROUP BY dept_name
+WITH CASCADED CHECK OPTION;
+```
+
+这将确保在创建 dept_summary 视图时，用户对 emp_dept_view 以及 employees 和 departments 表都有足够的权限。
+
+**使用 LOCAL：**
+
+```
+CREATE VIEW dept_summary AS
+SELECT dept_name, COUNT(emp_id) AS num_employees
+FROM emp_dept_view
+GROUP BY dept_name
+WITH LOCAL CHECK OPTION;
+```
+
+这只会检查用户对 dept_summary 视图本身的权限，而不检查 emp_dept_view 或其引用的表的权限。
