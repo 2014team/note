@@ -1792,3 +1792,1276 @@ WITH LOCAL CHECK OPTION;
 ```
 
 这只会检查用户对 dept_summary 视图本身的权限，而不检查 emp_dept_view 或其引用的表的权限。
+
+### 存储过程
+
+#### 简介
+
+MySQL存储过程（Stored Procedure）是一种在数据库中保存并可以重复执行的SQL代码块。存储过程的主要作用是提高操作的效率，减少网络通信量，并确保业务逻辑的一致性和可重用性。
+
+下面是一个基本的MySQL存储过程示例，以及如何创建、调用和删除存储过程的步骤。
+
+**创建存储过程**
+
+```
+DELIMITER $$
+
+CREATE PROCEDURE ProcedureName(IN parameter1 INT, OUT parameter2 INT)
+BEGIN
+    -- 这里写你的SQL逻辑
+    SET parameter2 = parameter1 * 2;
+END$$
+
+DELIMITER ;
+```
+
+在这个例子中：
+
+ProcedureName 是存储过程的名称。
+
+IN parameter1 INT 是输入参数。
+
+OUT parameter2 INT 是输出参数。
+
+DELIMITER $$ 用来改变MySQL语句结束符，防止在定义过程中出现问题。
+
+**调用存储过程**
+
+```
+CALL ProcedureName(5, @output);
+SELECT @output;
+```
+
+在这个例子中：
+
+CALL ProcedureName(5, @output); 调用存储过程并传递参数。
+
+SELECT @output; 用来获取输出参数的值。
+
+**删除存储过程**
+
+```
+DROP PROCEDURE IF EXISTS ProcedureName;
+```
+
+#### 基本语法
+
+**创建存储过程**的基本语法如下：
+
+```
+DELIMITER $$
+
+CREATE PROCEDURE procedure_name([parameter_mode parameter_name data_type[, ...]])
+BEGIN
+    -- SQL语句
+END$$
+
+DELIMITER ;
+```
+
+procedure_name 是存储过程的名称。
+
+parameter_mode 是参数模式，可以是 IN、OUT 或 INOUT。
+
+IN：输入参数，调用存储过程时传递的值。
+
+OUT：输出参数，存储过程执行后返回的值。
+
+INOUT：既是输入参数又是输出参数。
+
+parameter_name 是参数的名称。
+
+data_type 是参数的数据类型。
+
+BEGIN ... END 包含存储过程的SQL语句块。
+
+**删除存储过程**
+
+```
+DROP PROCEDURE IF EXISTS procedure_name;
+```
+
+**调用存储过程**
+
+```
+CALL procedure_name([parameter[, ...]]);
+```
+
+**查看存储过程的状态**
+
+```
+SHOW PROCEDURE STATUS LIKE '存储过程名称';
+```
+
+**查看存储过程的创建语句**
+
+```
+SHOW CREATE PROCEDURE 存储过程名称;
+```
+
+#### 系统变量
+
+**系统变量** 是MySQL服务器提供，不是用户定义的，属于服务器层面。分为**全局变量**(GLOBAL)、**会话变量**(SESSION)
+
+查看系统变量
+
+```
+SHOW [SESSION|GLOBAL] VARIABLES;   查看所有系统变量
+SHOW [SESSION|GLOBAL] VARIABLES LIKE '....';   可以通过UKE模糊匹配方式查找变量
+SELECT @@[SESSION|GLOBAL] 系统变量名;   查看指定变量的值
+```
+
+设置系统变量
+
+```
+SET  [SESSION|GLOBAL] 系统变量名=值;
+SET  @@[SESSION|GLOBAL] 系统变量名=值;
+```
+
+如果没有指定SESSION/GLOBAL，默认是SESSION，
+
+mysql服务重新启动之后，所设置的全局参数会失效，
+
+要想不失效，可以在 /etc/my.cnf 中配置
+
+**用户定义变量**
+
+用户定义变量 是用户根据需要自己定义的变量，用户变量不用提前声明，在用的时候直接用"@变量名"使用就可以。其作用域为当前连接。
+
+赋值
+
+```
+SET @var_name = expr [, @var_name = expr] ...;
+SET @var_name :=expr [, @var_name := expr] ...;
+```
+
+使用
+
+```
+SELECT @var_name := expr [, @var_name := expr] ... ;
+SELECT 字段名 INTO @var_name FROM 表名 ;
+```
+
+用户定义的变量无需对其进行声明或初始化，只不过获取到的值为NULL。
+
+#### 局部变量
+
+是根据需要定义的在局部生效的变量，访问之前，需要DECLARE声明。可用作存储过程内的局部变量和输入参数，局部变量
+
+的范围是在其内声明的BEGIN..END块。
+
+**声明**
+
+```
+DECLARE 变量名 变量类型 [DEFAULT ..];
+```
+
+变量类型就是数据库字段类型:INT、BIGINT、CHAR、VARCHAR、DATE、TIME等
+
+**赋值**
+
+```
+SET 变量名=值;
+SET 变量名:= 值;
+SELECT 字段名 INTO 变量名 FROM 表名;
+```
+
+#### IF使用
+
+两种主要形式
+
+单一条件的 IF 语句
+
+多条件的 IF ... ELSEIF ... ELSE 语句
+
+**单一条件的 IF 语句**
+
+```
+IF condition THEN
+    -- SQL 语句
+END IF;
+```
+
+condition：这是一个布尔表达式。如果表达式为真，则执行 THEN 部分的SQL语句。
+
+**示例**
+
+```
+DELIMITER $$
+
+CREATE PROCEDURE checkStock(IN productID INT)
+BEGIN
+    DECLARE stock INT;
+
+    SELECT quantity INTO stock FROM products WHERE id = productID;
+
+    IF stock > 0 THEN
+        SELECT 'In Stock';
+    END IF;
+END$$
+
+DELIMITER ;
+```
+
+**多条件的 IF ... ELSEIF ... ELSE 语句**
+
+```
+IF condition1 THEN
+    -- SQL 语句
+ELSEIF condition2 THEN
+    -- SQL 语句
+ELSE
+    -- SQL 语句
+END IF;
+```
+
+condition1：第一个布尔表达式。如果为真，则执行其后的SQL语句。
+
+condition2：第二个布尔表达式，如果 condition1 为假且 condition2 为真，则执行其后的SQL语句。
+
+ELSE 部分是可选的，如果所有条件都不满足，则执行 ELSE 部分的SQL语句。
+
+**示例**
+
+```
+DELIMITER $$
+
+CREATE PROCEDURE checkStockLevel(IN productID INT)
+BEGIN
+    DECLARE stock INT;
+
+    SELECT quantity INTO stock FROM products WHERE id = productID;
+
+    IF stock > 100 THEN
+        SELECT 'Stock Level: High';
+    ELSEIF stock BETWEEN 50 AND 100 THEN
+        SELECT 'Stock Level: Medium';
+    ELSEIF stock BETWEEN 1 AND 49 THEN
+        SELECT 'Stock Level: Low';
+    ELSE
+        SELECT 'Out of Stock';
+    END IF;
+END$$
+
+DELIMITER ;
+```
+
+#### 参数类型 
+
+参数分为三种类型：IN 参数、OUT 参数和 INOUT 参数。
+
+**IN 参数：**
+
+用于向存储过程传递数据。
+
+在存储过程中可以读取，但不能修改。
+
+默认参数类型，如果不指定参数类型，MySQL将其视为 IN 参数。
+
+**OUT 参数：**
+
+用于从存储过程返回数据。
+
+在存储过程中可以修改，但在存储过程外部无法读取其初始值。
+
+**INOUT 参数：**
+
+既可以向存储过程传递数据，也可以从存储过程返回数据。
+
+在存储过程中可以读取和修改。
+
+**基本语法**
+
+```
+CREATE PROCEDURE procedure_name([IN|OUT|INOUT] parameter_name data_type, ...)
+BEGIN
+    -- SQL语句
+END;
+```
+
+**示例：使用 IN 参数**
+
+```
+DELIMITER $$
+
+CREATE PROCEDURE getUserInfo(IN userId INT)
+BEGIN
+    SELECT name, email FROM users WHERE id = userId;
+END$$
+
+DELIMITER ;
+```
+
+**示例：使用 OUT 参数**
+
+```
+DELIMITER $$
+
+CREATE PROCEDURE getUserCount(OUT count INT)
+BEGIN
+    SELECT COUNT(*) INTO count FROM users;
+END$$
+
+DELIMITER ;
+```
+
+**示例：使用 INOUT 参数**
+
+```
+DELIMITER $$
+
+CREATE PROCEDURE updateUserName(INOUT userId INT, IN newUserName VARCHAR(100))
+BEGIN
+    UPDATE users SET name = newUserName WHERE id = userId;
+    SELECT ROW_COUNT() INTO userId;  -- 返回受影响的行数
+END$$
+
+DELIMITER ;
+```
+
+**使用 `IN`、`OUT` 和 `INOUT` 参数**
+
+```
+DELIMITER $$
+
+CREATE PROCEDURE manageUser(IN userId INT, IN newEmail VARCHAR(100), OUT userExists BOOLEAN, INOUT userName VARCHAR(100))
+BEGIN
+    DECLARE userCount INT;
+
+    -- 检查用户是否存在
+    SELECT COUNT(*) INTO userCount FROM users WHERE id = userId;
+    SET userExists = (userCount > 0);
+
+    IF userExists THEN
+        -- 更新用户的邮箱
+        UPDATE users SET email = newEmail WHERE id = userId;
+        -- 返回用户的名字
+        SELECT name INTO userName FROM users WHERE id = userId;
+    ELSE
+        -- 如果用户不存在，将userName设为空
+        SET userName = NULL;
+    END IF;
+END$$
+
+DELIMITER ;
+```
+
+**小结**
+
+- IN 参数：用于传递数据给存储过程，只能读取，不能修改。
+- OUT 参数：用于从存储过程返回数据，可以修改，但在存储过程外部无法读取其初始值。
+- INOUT 参数：用于传递和返回数据，可以读取和修改
+
+#### CASE使用
+
+CASE 语句有两种主要形式：
+
+1、简单 CASE 语句：用于比较单个表达式的多个值。
+
+2、搜索 CASE 语句：用于基于多个条件表达式的判断。
+
+**简单 `CASE` 语句**
+
+```
+CASE expression
+    WHEN value1 THEN result1
+    WHEN value2 THEN result2
+    ...
+    ELSE resultN
+END
+```
+
+expression 是要比较的表达式。
+
+value1, value2, ... 是要与 expression 进行比较的值。
+
+result1, result2, ... 是在 expression 与相应的 value 匹配时返回的结果。
+
+ELSE 是可选的，指定当没有匹配的值时返回的结果。
+
+**示例**
+
+```
+SELECT 
+    product_id,
+    CASE category_id
+        WHEN 1 THEN 'Electronics'
+        WHEN 2 THEN 'Clothing'
+        WHEN 3 THEN 'Books'
+        ELSE 'Other'
+    END AS category_name
+FROM products;
+```
+
+**搜索 CASE 语句**
+
+```
+CASE
+    WHEN condition1 THEN result1
+    WHEN condition2 THEN result2
+    ...
+    ELSE resultN
+END
+```
+
+condition1, condition2, ... 是要判断的条件。
+
+result1, result2, ... 是在相应的条件为真时返回的结果。
+
+ELSE 是可选的，指定当所有条件都不为真时返回的结果。
+
+**示例**
+
+```
+SELECT 
+    order_id,
+    total_amount,
+    CASE
+        WHEN total_amount > 1000 THEN 'High'
+        WHEN total_amount BETWEEN 500 AND 1000 THEN 'Medium'
+        ELSE 'Low'
+    END AS order_priority
+FROM orders;
+```
+
+**在存储过程中使用CASE**
+
+在存储过程中，你也可以使用CASE语句来实现条件控制。
+
+**示例**
+
+```
+DELIMITER $$
+
+CREATE PROCEDURE determineGrade(IN score INT, OUT grade CHAR(1))
+BEGIN
+    CASE
+        WHEN score >= 90 THEN SET grade = 'A';
+        WHEN score >= 80 THEN SET grade = 'B';
+        WHEN score >= 70 THEN SET grade = 'C';
+        WHEN score >= 60 THEN SET grade = 'D';
+        ELSE SET grade = 'F';
+    END CASE;
+END$$
+
+DELIMITER ;
+```
+
+在 UPDATE 语句中使用 CASE
+
+你可以在 UPDATE 语句中使用 CASE 来有条件地更新表中的数据。
+
+**示例**
+
+```
+UPDATE employees
+SET salary = CASE
+    WHEN job_title = 'Manager' THEN salary * 1.10
+    WHEN job_title = 'Engineer' THEN salary * 1.05
+    ELSE salary * 1.03
+END;
+```
+
+**小结**
+
+- CASE 语句可以在 SELECT, UPDATE, DELETE 等SQL语句中使用，用于条件判断。
+- CASE 语句有两种形式：简单 CASE 语句和搜索 CASE 语句。
+- 可以在存储过程中使用 CASE 语句实现复杂的逻辑判断。
+
+#### WHILE使用
+
+WHILE 语句允许你在存储过程中实现循环操作，直到指定的条件为假时才退出循环。
+
+**基本语法**
+
+```
+WHILE condition DO
+    -- SQL语句
+END WHILE;
+```
+
+condition：这是一个布尔表达式。在每次循环开始时计算，如果为真，则执行循环体内的SQL语句，否则退出循环。
+
+DO ... END WHILE：包含循环体内要执行的SQL语句。
+
+**示例**
+
+```
+DELIMITER $$
+
+CREATE PROCEDURE printNumbers()
+BEGIN
+    DECLARE i INT DEFAULT 1;
+
+    WHILE i <= 10 DO
+        SELECT i;
+        SET i = i + 1;
+    END WHILE;
+END$$
+
+DELIMITER ;
+```
+
+**小结**
+
+- 变量声明和初始化：在使用 WHILE 循环之前，确保所有循环控制变量已声明和正确初始化。
+- 条件控制：确保循环条件能够在适当的时间变为假，以防止死循环。
+- 使用 LEAVE 语句：可以在特定条件下使用 LEAVE 语句提前退出循环
+
+#### REPEAT 
+
+REPEAT 语句用于在满足某个条件之前反复执行一组SQL语句。与 WHILE 语句不同的是，REPEAT 语句会先执行循环体内的SQL语句，然后再检查条件。
+
+**基本语法**
+
+```
+REPEAT
+    -- SQL语句
+UNTIL condition
+END REPEAT;
+```
+
+UNTIL condition：这是一个布尔表达式。在每次循环结束时计算，如果为真，则退出循环；如果为假，则继续执行循环。
+
+**示例** ：打印从1到10的数字。
+
+```
+DELIMITER $$
+
+CREATE PROCEDURE printNumbers()
+BEGIN
+    DECLARE i INT DEFAULT 1;
+
+    REPEAT
+        SELECT i;
+        SET i = i + 1;
+    UNTIL i > 10
+    END REPEAT;
+END$$
+
+DELIMITER ;
+```
+
+#### LOOP使用
+
+与 WHILE 和 REPEAT 语句不同的是，LOOP 语句没有内置的条件检查机制，通常需要结合 LEAVE 语句和条件控制来终止循环
+
+**基本语法**
+
+```
+label: LOOP
+    -- SQL语句
+END LOOP label;
+```
+
+
+
+label 是循环的标签，用于标识并在需要时退出该循环。
+
+LOOP 语句内的SQL语句会被反复执行，直到执行 LEAVE label; 语句。
+
+**示例** ：一个简单的示例，在存储过程中使用LOOP语句打印从1到10的数字。
+
+```
+DELIMITER $$
+
+CREATE PROCEDURE printNumbers()
+BEGIN
+    DECLARE i INT DEFAULT 1;
+
+    loop_label: LOOP
+        IF i > 10 THEN
+            LEAVE loop_label;
+        END IF;
+        SELECT i;
+        SET i = i + 1;
+    END LOOP loop_label;
+END$$
+
+DELIMITER ;
+```
+
+#### 游标
+
+游标（Cursor）用于遍历查询结果集，逐行处理数据。游标主要用于需要对查询结果集进行逐行处理的情况，例如批量更新或复杂计算。使用游标可以实现对每一行数据进行详细处理。
+
+使用游标通常包括以下几个步骤：
+
+1. 声明游标。
+2. 打开游标。
+3. 获取数据（逐行）。
+4. 关闭游标。
+
+**基本语法**
+
+```
+DECLARE cursor_name CURSOR FOR select_statement;
+
+OPEN cursor_name;
+
+FETCH cursor_name INTO variable1, variable2, ...;
+
+CLOSE cursor_name;
+```
+
+**示例**，使用游标遍历 employees 表，并输出每个员工的 id 和 name。
+
+```
+DELIMITER $$
+
+CREATE PROCEDURE listEmployees()
+BEGIN
+    DECLARE done INT DEFAULT 0;
+    DECLARE emp_id INT;
+    DECLARE emp_name VARCHAR(100);
+
+    DECLARE emp_cursor CURSOR FOR SELECT id, name FROM employees;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+    OPEN emp_cursor;
+
+    read_loop: LOOP
+        FETCH emp_cursor INTO emp_id, emp_name;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+
+        SELECT emp_id, emp_name;
+    END LOOP read_loop;
+
+    CLOSE emp_cursor;
+END$$
+
+DELIMITER ;
+```
+
+**示例**使用游标遍历 employees 表，并将每个员工的工资增加10%。
+
+```
+DELIMITER $$
+
+CREATE PROCEDURE updateEmployeeSalaries()
+BEGIN
+    DECLARE done INT DEFAULT 0;
+    DECLARE emp_id INT;
+
+    DECLARE emp_cursor CURSOR FOR SELECT id FROM employees;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+    OPEN emp_cursor;
+
+    read_loop: LOOP
+        FETCH emp_cursor INTO emp_id;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+
+        UPDATE employees SET salary = salary * 1.10 WHERE id = emp_id;
+    END LOOP read_loop;
+
+    CLOSE emp_cursor;
+END$$
+
+DELIMITER ;
+```
+
+游标的声明：游标必须在存储过程的声明部分（即 BEGIN 之后，第一条 SQL 语句之前）声明。
+
+错误处理：使用 DECLARE CONTINUE HANDLER 处理 NOT FOUND 情况，以便在游标到达结果集末尾时退出循环。
+
+关闭游标：在存储过程结束前关闭游标以释放资源
+
+**小结**
+
+1. 游标用于遍历查询结果集，逐行处理数据。
+2. 使用游标的步骤包括：声明、打开、获取数据、关闭。
+3. 结合其他控制结构可以实现更复杂的数据处理逻辑。
+4. 确保正确处理游标的结束情况并释放资源。
+
+#### Handler（条件处理程序）
+
+条件处理程序（Handler）用于处理在执行SQL语句时可能发生的异常情况。通过使用条件处理程序，你可以捕获并处理错误和其他特定条件，从而提高存储过程的健壮性和可靠性。
+
+**基本语法**
+
+```
+DECLARE handler_type HANDLER FOR condition_type [condition_value] statement;
+```
+
+handler_type：可以是 CONTINUE 或 EXIT。CONTINUE 表示在处理程序执行后继续执行后续语句，而 EXIT 表示在处理程序执行后退出当前块。
+
+condition_type：可以是 SQLSTATE、SQLWARNING、NOT FOUND 或 SQLEXCEPTION。
+
+condition_value：在使用 SQLSTATE 时指定特定的SQL状态代码。
+
+statement：当触发条件时要执行的语句。
+
+
+
+**示例**：处理未找到的记录
+
+以下示例演示了如何使用条件处理程序来处理 NOT FOUND 条件，即当游标到达结果集的末尾时触发
+
+```
+DELIMITER $$
+
+CREATE PROCEDURE listEmployees()
+BEGIN
+    DECLARE done INT DEFAULT 0;
+    DECLARE emp_id INT;
+    DECLARE emp_name VARCHAR(100);
+
+    DECLARE emp_cursor CURSOR FOR SELECT id, name FROM employees;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+
+    OPEN emp_cursor;
+
+    read_loop: LOOP
+        FETCH emp_cursor INTO emp_id, emp_name;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+
+        SELECT emp_id, emp_name;
+    END LOOP read_loop;
+
+    CLOSE emp_cursor;
+END$$
+
+DELIMITER ;
+```
+
+**示例**：处理SQL异常
+
+以下示例演示了如何使用条件处理程序来处理SQL异常（SQLEXCEPTION）。
+
+```
+DELIMITER $$
+
+CREATE PROCEDURE safeInsertEmployee(IN emp_name VARCHAR(100), IN emp_salary DECIMAL(10,2))
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- 异常处理逻辑，例如记录错误日志或回滚事务
+        ROLLBACK;
+        SELECT 'Error occurred, rolling back changes' AS error_message;
+    END;
+
+    START TRANSACTION;
+
+    -- 假设这里可能会抛出异常
+    INSERT INTO employees (name, salary) VALUES (emp_name, emp_salary);
+
+    COMMIT;
+END$$
+
+DELIMITER ;
+```
+
+**示例**：处理特定SQLSTATE
+
+以下示例演示了如何使用条件处理程序来处理特定的SQL状态代码（SQLSTATE）。
+
+```
+DELIMITER $$
+
+CREATE PROCEDURE handleDuplicateKey()
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLSTATE '23000'
+    BEGIN
+        -- 处理重复键错误
+        SELECT 'Duplicate key error occurred' AS error_message;
+    END;
+
+    -- 可能引发重复键错误的操作
+    INSERT INTO employees (id, name) VALUES (1, 'John Doe');
+END$$
+
+DELIMITER ;
+```
+
+**小结**
+
+1. DECLARE ... HANDLER：用于声明条件处理程序。
+2. CONTINUE 和 EXIT：指定在处理程序执行后是否继续执行后续语句或退出当前块。
+3. 条件类型：包括 NOT FOUND、SQLWARNING、SQLEXCEPTION 和特定的 SQLSTATE 代码。
+4. 使用场景：处理游标结束、SQL异常、特定错误等。
+
+### 触发器
+
+#### 简介
+
+MySQL 触发器（trigger）是数据库中用于在某些事件发生时自动执行的特殊存储过程。这些事件通常是指对表的INSERT、UPDATE或DELETE操作。触发器可以帮助实现一些复杂的业务逻辑，并确保数据的完整性和一致性。
+
+#### 创建触发器
+
+创建触发器的语法：
+
+```
+CREATE TRIGGER trigger_name
+AFTER/BEFORE INSERT/UPDATE/DELETE
+ON table_name
+FOR EACH ROW
+BEGIN
+  -- 触发器逻辑
+END;
+```
+
+**示例**：假设我们有一个表 employees 和一个日志表 employee_log，我们希望在每次向 employees 表插入新记录时，自动向 employee_log 表插入一条日志记录。
+
+```
+CREATE TABLE employees (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100),
+  position VARCHAR(100)
+);
+
+CREATE TABLE employee_log (
+  log_id INT AUTO_INCREMENT PRIMARY KEY,
+  employee_id INT,
+  action VARCHAR(50),
+  action_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+DELIMITER //
+
+CREATE TRIGGER after_employee_insert
+AFTER INSERT ON employees
+FOR EACH ROW
+BEGIN
+  INSERT INTO employee_log (employee_id, action) VALUES (NEW.id, 'INSERT');
+END;
+
+//
+
+DELIMITER ;
+```
+
+在这个示例中，触发器 after_employee_insert 会在每次向 employees 表插入新记录后，自动向 employee_log 表插入一条日志记录。
+
+#### 使用触发器的注意事项
+
+1. **触发器的类型：**
+
+   BEFORE 触发器：在执行 INSERT、UPDATE 或 DELETE 操作之前触发。
+
+   AFTER 触发器：在执行 INSERT、UPDATE 或 DELETE 操作之后触发。
+
+   每张表最多可以有 6 个触发器：
+
+   每种操作类型（INSERT、UPDATE、DELETE）分别可以有 BEFORE 和 AFTER 两个触发器。
+
+2. **触发器的作用范围：**
+
+   触发器在表级别上定义，并且不能跨表操作。每个触发器仅影响它所在的表。
+
+3. **性能影响：**
+
+   由于触发器会在指定的操作发生时自动执行，因此过多的复杂触发器可能会影响数据库的性能。
+
+4. **事务控制：**
+
+   触发器的操作是在同一个事务内执行的。如果触发器中的操作失败，整个事务会被回滚。
+
+#### 删除触发器
+
+要删除一个触发器，可以使用 DROP TRIGGER 语句：
+
+```
+DROP TRIGGER trigger_name;
+```
+
+**示例**
+
+```
+DROP TRIGGER after_employee_insert;
+```
+
+### 锁
+
+#### 简介 
+
+在MySQL中，锁机制是为了保证数据的一致性和完整性，防止多个事务同时操作同一数据时出现冲突。
+
+#### **全局锁**
+
+全局锁就是对整个数据库实例加锁，加锁后整个实例就处于只读状态，后续的DML的写语句，DDL语句，已经更新操作的事务提交语句都将被阻塞。
+
+其典型的使用场景是做全库的逻辑备份，对所有的表进行锁定，从而获取一致性视图，保证数据的完整性。
+
+**示例**
+
+加锁
+
+```
+FLUSH TABLES WITH READ LOCK;
+```
+
+使用mysqldump工具备份
+
+```
+mysqldump --all-databases > all_databases.sql
+```
+
+解锁
+
+```
+UNLOCK TABLES;
+```
+
+以上示例存在问题
+
+如果在主库上备份，那么在备份期间都不能执行更新，业务基本上就得停摆。
+
+如果在从库上备份，那么在备份期间从库不能执行主库同步过来的二进制日志(binlog)，会导致主从延迟。
+
+在InnoDB引擎中，我们可以在备份时加上参数--single-transaction 参数来完成不加锁的一致性数据备份。
+
+演示
+
+![1721199253353.jpg](image\1721199253353.jpg)
+
+**single-transaction 的作用**
+
+**一致性备份**
+
+在启动备份时，--single-transaction 会启动一个新的事务（START TRANSACTION）。
+
+事务内的所有查询会基于事务开始时的数据库状态，这样可以确保备份期间数据的一致性。
+
+**不锁定表：**
+
+与 FLUSH TABLES WITH READ LOCK 不同，--single-transaction 不会锁定表，从而允许其他事务继续对数据库进行读写操作。这样可以减少对数据库正常操作的影响。
+
+**避免长时间锁定：**
+
+对于大数据库，备份可能需要较长时间。使用 --single-transaction 可以避免长时间的表锁定，减少对应用程序的影响。
+
+使用 mysqldump 工具进行备份时，可以使用 --single-transaction 参数：
+
+```
+mysqldump --single-transaction -u username -p database_name > backup.sql
+```
+
+**![1721199557998.jpg](image\1721199557998.jpg)**
+
+**事务支持：**
+
+--single-transaction 适用于支持事务的存储引擎（如InnoDB）。如果数据库中有使用非事务存储引擎的表（如MyISAM），这些表的数据在备份过程中可能会发生变化，从而无法保证完全一致的备份。
+
+**长时间查询：**
+
+在备份过程中，如果有长时间运行的查询，可能会导致备份文件的大小增加，因为 mysqldump 会保留备份期间修改的数据版本，直到备份完成。
+
+**备份视图：**
+
+使用 --single-transaction 进行备份时，如果数据库中包含视图，可能会出现视图定义和数据不一致的情况。为了避免这种情况，可以结合使用 --lock-tables=false 参数。
+
+**结合其他参数**
+
+可以结合其他参数使用，以优化备份过程：
+
+--quick：快速备份大表，逐行从服务器读取数据。
+
+--lock-tables=false：明确禁用表锁定。
+
+```
+mysqldump --single-transaction --quick --lock-tables=false -u username -p database_name > backup.sql
+```
+
+#### 表级锁
+
+每次操作锁住整张表。锁定粒度大，发生锁冲突的概率最高，并发度最低。应用在MyISAM、InnoD8、BDB等存储引擎中。
+
+表级锁，主要分为以下三类：
+
+**表锁**：使用LOCK TABLES ... READ/WRITE命令来锁定表。读取锁（READ LOCK）允许其他事务读取数据，但不允许修改。写入锁（WRITE LOCK）则完全阻止其他事务的读写操作。
+
+**元数据锁（MDL）**：当执行DDL操作（如ALTER TABLE）时，会自动获取元数据锁，以防止表结构在操作过程中被其他事务改变。
+
+**意向锁**：意向锁是一种特殊的表级锁，用于表示事务打算在表的某些行上加锁。主要有以下两种：
+
+意向共享锁（IS锁）：表示事务打算在某些行上加共享锁。
+
+意向排他锁（IX锁）：表示事务打算在某些行上加排他锁。
+
+
+
+**表锁分为两类:**
+
+**表共享读锁(read lock)**：
+
+**多个事务可以同时获取共享读锁**：多个事务可以并发读取数据，而不相互阻塞。
+
+**阻止写操作**：当一个事务持有共享读锁时，其他事务无法获取排它写锁进行写操作。
+
+
+
+**排它写锁(write lock)**：
+
+**独占访问权**：当一个事务获取了排它写锁时，其他任何事务都无法获取任何类型的锁（包括共享读锁和其他排它写锁）。
+
+**阻止读写操作**：排它写锁不仅阻止其他事务的写操作，也阻止其他事务的读操作，确保对数据的独占访问。
+
+演示 表共享读锁
+
+![1721200631053.jpg](image\1721200631053.jpg)
+
+演示 排它写锁
+
+![1721201561099.jpg](image\1721201561099.jpg)
+
+**元数据锁(meta data lock，MDL)**
+
+MySQL中的元数据锁（Metadata Lock, MDL）是用于保护数据库对象（如表、视图、存储过程等）的元数据的锁。这种锁机制是在MySQL 5.5引入的，用于确保对元数据的并发访问时的一致性和完整性。
+
+**元数据锁的特性**
+
+自动管理：元数据锁由MySQL自动管理，不需要用户显式地进行控制。
+
+保护元数据：确保当一个事务在访问或修改一个数据库对象的元数据时，其他事务不会同时修改该对象的元数据。
+
+类型：元数据锁可以是读锁或写锁。
+
+**元数据锁的使用场景**
+
+读取元数据：当一个事务正在读取一个表的元数据时，其他事务不能对该表的元数据进行修改。
+
+修改元数据：当一个事务正在修改一个表的元数据时，其他事务不能读取或修改该表的元数据。
+
+**元数据锁的常见操作**
+
+以下是一些常见的会触发元数据锁的操作：
+
+DDL操作：如CREATE TABLE、DROP TABLE、ALTER TABLE等，这些操作会获取写锁。
+
+DML操作：如SELECT、INSERT、UPDATE、DELETE等，这些操作会获取读锁。
+
+演示 当一个事务正在读取一个表的元数据时，其他事务不能对该表的元数据进行修改
+
+![1721204973375.jpg](mysql\image\1721204973375.jpg)
+
+![1721121357625.png](F:\zhuzeqing\note\docs\mysql\image\1721121357625.png)
+
+要查看当前的元数据锁，可以查询 performance_schema.metadata_locks 表。下面是如何查看元数据锁的详细示例。
+
+启用 Performance Schema
+
+首先，确保 performance_schema 是启用的。你可以在 MySQL 配置文件（my.cnf）中添加或确认以下配置：
+
+```
+[mysqld]
+performance_schema = ON
+```
+
+如果 performance_schema 没有启用，可以通过以下命令在运行时启用（仅在 MySQL 8.0 及以上版本）：
+
+```
+SET GLOBAL performance_schema = ON;
+```
+
+**查询元数据锁：**
+
+```
+SELECT * FROM performance_schema.metadata_locks;
+```
+
+OBJECT_TYPE：对象类型（如 TABLE）
+
+OBJECT_SCHEMA：对象所属的数据库
+
+OBJECT_NAME：对象名称（如表名）
+
+LOCK_TYPE：锁类型（如 SHARED_READ, SHARED_WRITE, EXCLUSIVE）
+
+LOCK_DURATION：锁持续时间（如 TRANSACTION, STATEMENT, EXPLICIT）
+
+LOCK_STATUS：锁状态（如 GRANTED, PENDING）
+
+OWNER_THREAD_ID：持有锁的线程ID
+
+OWNER_EVENT_ID：持有锁的事件ID
+
+
+
+**意向锁（Intention Lock）**
+
+是表级锁的一种，用于提高多粒度锁定的效率和避免死锁。意向锁本身并不阻止具体的行级操作，但它们帮助InnoDB存储引擎了解事务对表的锁定意图，从而避免在获取行级锁时发生冲突。
+
+**为什么需要意向锁**
+
+意向锁的主要目的是为了协调行级锁和表级锁的使用，使得InnoDB能够在不必检查每一行锁的情况下，实现高效的锁冲突检测和管理。
+
+**工作原理**
+
+当一个事务请求行级锁时，InnoDB会首先请求相应的意向锁。意向锁的存在告诉其他事务，该表中的某些行可能已经被锁定，这样可以避免整个表的锁定冲突。例如：
+
+当一个事务请求对某行加共享锁（S锁）时，InnoDB会首先请求该表的意向共享锁（IS锁）。
+
+当一个事务请求对某行加排他锁（X锁）时，InnoDB会首先请求该表的意向排他锁（IX锁）。
+
+意向共享锁(I5):由语句select..........lock in share mode添加。
+
+意向排他锁(IX):由insert、update、delete、select..for update 添加。
+
+
+
+意向共享锁(IS):与表锁共享锁(read)兼容，与表锁排它锁(write)互斥。
+
+意向排他锁(IX):与表锁共享锁(read)及排它锁(write)都互斥。意向锁之间不会互斥。
+
+查看意向锁情况
+
+```
+SELECT object_schema,object_name, index_name, lock_type, lock_mode,lock_data FROM performance_schema.data_locks;
+```
+
+演示 窗口2堵塞状态
+
+![1721714764500.jpg](image\1721714764500.jpg)
+
+窗口2堵塞状态
+
+![1721716527552.jpg](image\1721716527552.jpg)
+
+#### 行级锁
+
+MySQL 中的行级锁（row-level locking）是指对单行记录加锁，以实现更高的并发性和数据的一致性。行级锁允许多个事务同时读写不同的行，从而提高数据库的性能和吞吐量。
+
+**共享锁（S 锁，Share Lock）：**
+
+允许多个事务同时读取一行记录，但不允许修改。
+
+通过命令 SELECT ... LOCK IN SHARE MODE 获得。
+
+创建表和初始化数据
+
+```
+-- 创建一个示例表
+CREATE TABLE example (
+    id INT PRIMARY KEY,
+    value VARCHAR(100)
+) ENGINE=InnoDB;
+
+-- 插入一些初始数据
+INSERT INTO example (id, value) VALUES 
+(1, 'Alice'), 
+(2, 'Bob'), 
+(3, 'Charlie'), 
+(8, 'Eve'), 
+(11, 'Frank');
+```
+
+
+
+```
+-- 事务 1：对 id = 1 的行加共享锁
+START TRANSACTION;
+SELECT * FROM example WHERE id = 1 LOCK IN SHARE MODE;
+
+-- 事务 2：尝试对 id = 1 的行加排他锁（会被阻塞）
+START TRANSACTION;
+UPDATE example SET value = 'Updated' WHERE id = 1;
+
+-- 事务 1：提交事务，释放共享锁
+COMMIT;
+
+-- 事务 2：现在可以获得排他锁并完成更新
+```
+
+**排他锁（X 锁，Exclusive Lock）：**
+
+允许一个事务读取和修改一行记录，其他事务不能访问。
+
+通过命令 SELECT ... FOR UPDATE 或 UPDATE ... 获得。
+
+此外，InnoDB 存储引擎在实现行级锁的过程中使用了其他一些重要的锁机制，这些机制虽然不是行级锁的直接类型，但在行级锁操作中会涉及到：
+
+```
+-- 事务 1：对 id = 1 的行加排他锁
+START TRANSACTION;
+SELECT * FROM example WHERE id = 1 FOR UPDATE;
+
+-- 事务 2：尝试对 id = 1 的行加共享锁（会被阻塞）
+START TRANSACTION;
+SELECT * FROM example WHERE id = 1 LOCK IN SHARE MODE;
+
+-- 事务 1：提交事务，释放排他锁
+COMMIT;
+
+-- 事务 2：现在可以获得共享锁并读取数据
+```
+
+**意向锁（Intention Lock）：**
+
+表级锁，用于在行级锁之前设置，指示事务打算加锁的类型。
+
+主要有意向共享锁（IS 锁）和意向排他锁（IX 锁）。
+
+```
+-- 意向锁无法直接操作，需要理解它的存在，以下是一个例子来说明其作用
+
+-- 事务 1：对表加意向排他锁（内部操作）
+START TRANSACTION;
+UPDATE example SET value = 'Alice' WHERE id = 1;
+
+-- 事务 2：尝试对表加意向共享锁（会被阻塞）
+START TRANSACTION;
+SELECT * FROM example LOCK IN SHARE MODE;
+
+-- 事务 1：提交事务，释放锁
+COMMIT;
+
+-- 事务 2：现在可以获得意向共享锁并读取数据
+```
+
+**间隙锁（Gap Lock）：**
+
+防止幻读，通过锁住索引记录之间的间隙，防止其他事务在间隙中插入新记录。
+
+主要用于可重复读（REPEATABLE READ）隔离级别。
+
+```
+-- 事务 1：对 id = 3 到 id = 8 之间的间隙和记录加锁
+BEGIN;
+update example set value='kevin' where id=5;
+
+-- 事务 2：尝试在锁定的间隙中插入记录（会被阻塞）
+BEGIN;
+INSERT INTO example (id, value) VALUES (7, 'David');
+
+-- 事务 1：提交事务，释放锁
+COMMIT;
+
+-- 事务 2：现在可以插入记录
+COMMIT;
+```
+
+**临键锁（Next-Key Lock）：**
+
+行锁和间隙锁的组合，用于防止幻读，锁住一行记录和其前后的间隙。
+
+
+
+**记录锁（Record Lock）：**
+
+锁住单行记录，用于保证数据一致性。
+
+```
+-- 事务 1：对 id = 1 的记录加排他锁
+START TRANSACTION;
+UPDATE example SET value = 'Charlie' WHERE id = 1;
+
+-- 事务 2：尝试读取 id = 1 的记录（会被阻塞）
+START TRANSACTION;
+SELECT * FROM example WHERE id = 1 LOCK IN SHARE MODE;
+
+-- 事务 1：提交事务，释放锁
+COMMIT;
+
+-- 事务 2：现在可以读取记录
+COMMIT;
+```
+
