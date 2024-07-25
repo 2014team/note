@@ -722,7 +722,9 @@ Nginx静态代理是指，将所有的静态资源，例如，css、js、html、
 ### 2.5反向代理
 
 通过在location{}中添加通行代理proxy_pass可以指定当前Nginx所要代理的真正服务器。
-2.5.1 反向代理tomcat服务器
+
+#### 2.5.1 反向代理tomcat服务器
+
 **（1） 定义一个web工程**
 定义一个Maven Web工程，并命名为webdemo。其包含一个JSP页面，及一个Servlet。
 
