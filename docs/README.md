@@ -14,6 +14,8 @@
 
 ## [Mysql-5.6.43安装-Linux](/Mysql-5.6.43安装-Linux/)
 
+## [Mysql-8.0.26安装-Linux](/Mysql-8.0.26安装-Linux/)
+
 ## [Nginx安装-Linux](/Nginx安装-Linux/)
 
 ## [Redis安装-Linux](/Redis安装-Linux/)
