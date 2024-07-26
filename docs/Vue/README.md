@@ -1,3 +1,9 @@
+
+
+
+
+
+
 # Vue
 
 ## Vue简介
@@ -124,19 +130,36 @@ See more tips at https://vuejs.org/guide/deployment.html
 2.app容器型的代码依然符合htm1规范。只不过混入了一些特的Vue比法
 3.app容器型的代码被称为【Vue模板】
 
-## Vue实例
+## Hello world 示例
 
-每个 Vue 应用都是通过用 `Vue` 函数创建一个新的 **Vue 实例**开始的：
-
-### 创建实例
-
-```js
-var vm = new Vue({
-  // 选项
-})
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello word</title>
+    <script type="text/javascript"  src="../js/vue.js"></script>
+</head>
+<body>
+<div id="app">
+   {{name}}
+</div>
+<script  type="text/javascript" >
+    /*数据对象*/
+    var data = {
+        name:'Hello word'
+    }
+    /*创建一个Vue实例*/
+    const vm = new Vue({
+        el: '#app',
+        data: data
+    })
+</script>
+</body>
+</html>
 ```
 
-### 数据与方法
+## 数据与方法
 
 当一个 Vue 实例被创建时，它将 `data` 对象中的所有的 property 加入到 Vue 的**响应式系统**中。当这些 property 的值发生改变时，视图将会产生“响应”，即匹配更新为新的值。
 
@@ -189,6 +212,124 @@ new Vue({
   <button v-on:click="foo = 'baz'">Change it</button>
 </div>
 ```
+
+## 模板语法
+
+#### [文本](https://v2.cn.vuejs.org/v2/guide/syntax.html#文本)
+
+```html
+<span>Message: {{ msg }}</span>
+```
+
+#### [v-once 指令](https://v2.cn.vuejs.org/v2/api/#v-once)
+
+通过使用 [v-once 指令](https://v2.cn.vuejs.org/v2/api/#v-once)，你也能执行一次性地插值，当数据改变时，插值处的内容不会更新。
+
+```html
+<span v-once>这个将不会改变: {{ msg }}</span>
+```
+
+#### [`v-html`](https://v2.cn.vuejs.org/v2/api/#v-html)
+
+```
+<p>Using mustaches: {{ rawHtml }}</p>
+<p>Using v-html directive: <span v-html="rawHtml"></span></p>
+```
+
+#### [Attribute](https://v2.cn.vuejs.org/v2/guide/syntax.html#Attribute)
+
+ [`v-bind` 指令](https://v2.cn.vuejs.org/v2/api/#v-bind)
+
+```
+<div v-bind:id="dynamicId"></div>
+```
+
+于布尔 attribute (它们只要存在就意味着值为 `true`)，`v-bind` 工作起来略有不同，在这个例子中：
+
+```
+<button v-bind:disabled="isButtonDisabled">Button</button>
+```
+
+如果 `isButtonDisabled` 的值是 `null`、`undefined` 或 `false`，则 `disabled` attribute 甚至不会被包含在渲染出来的<button> 元素中。
+
+#### [使用 JavaScript 表达式](https://v2.cn.vuejs.org/v2/guide/syntax.html#使用-JavaScript-表达式)
+
+<div v-bind:id="'list-' + id"></div>
+
+```html
+{{ number + 1 }}
+
+{{ ok ? 'YES' : 'NO' }}
+
+{{ message.split('').reverse().join('') }}
+
+<div v-bind:id="'list-' + id"></div>
+```
+
+这些表达式会在所属 Vue 实例的数据作用域下作为 JavaScript 被解析。有个限制就是，每个绑定都只能包含**单个表达式**，所以下面的例子都**不会**生效。
+
+```html
+<!-- 这是语句，不是表达式 -->
+{{ var a = 1 }}
+
+<!-- 流控制也不会生效，请使用三元表达式 -->
+{{ if (ok) { return message } }}
+```
+
+#### [指令](https://v2.cn.vuejs.org/v2/guide/syntax.html#指令)
+
+##### v-if
+
+```
+<p v-if="seen">现在你看到我了</p>
+```
+
+这里，`v-if` 指令将根据表达式 `seen` 的值的真假来插入/移除 <p> 元素。
+
+#### [参数](https://v2.cn.vuejs.org/v2/guide/syntax.html#参数)
+
+一些指令能够接收一个“参数”，在指令名称之后以冒号表示。例如，`v-bind` 指令可以用于响应式地更新 HTML attribute：
+
+```
+<a v-bind:href="url">...</a>
+```
+
+在这里 `href` 是参数，告知 `v-bind` 指令将该元素的 `href` attribute 与表达式 `url` 的值绑定。
+
+另一个例子是 `v-on` 指令，它用于监听 DOM 事件：
+
+```
+<a v-on:click="doSomething">...</a>
+```
+
+在这里参数是监听的事件名。我们也会更详细地讨论事件处理。
+
+#### [动态参数](https://v2.cn.vuejs.org/v2/guide/syntax.html#动态参数)
+
+2.6.0 新增
+
+例如，如果你的 Vue 实例有一个 `data` property `attributeName`，其值为 `"href"`，那么这个绑定将等价于 `v-bind:href`
+
+```
+<!--
+注意，参数表达式的写法存在一些约束，如之后的“对动态参数表达式的约束”章节所述。
+-->
+<a v-bind:[attributeName]="url"> ... </a>
+```
+
+```
+<a v-on:[eventName]="doSomething"> ... </a>
+```
+
+当 `eventName` 的值为 `"focus"` 时，`v-on:[eventName]` 将等价于 `v-on:focus`。
+
+
+
+
+
+
+
+
 
 
 
