@@ -215,13 +215,13 @@ new Vue({
 
 ## 模板语法
 
-#### [文本](https://v2.cn.vuejs.org/v2/guide/syntax.html#文本)
+### [文本](https://v2.cn.vuejs.org/v2/guide/syntax.html#文本)
 
 ```html
 <span>Message: {{ msg }}</span>
 ```
 
-#### [v-once 指令](https://v2.cn.vuejs.org/v2/api/#v-once)
+### [v-once 指令](https://v2.cn.vuejs.org/v2/api/#v-once)
 
 通过使用 [v-once 指令](https://v2.cn.vuejs.org/v2/api/#v-once)，你也能执行一次性地插值，当数据改变时，插值处的内容不会更新。
 
@@ -229,14 +229,14 @@ new Vue({
 <span v-once>这个将不会改变: {{ msg }}</span>
 ```
 
-#### [`v-html`](https://v2.cn.vuejs.org/v2/api/#v-html)
+### [`v-html`](https://v2.cn.vuejs.org/v2/api/#v-html)
 
 ```
 <p>Using mustaches: {{ rawHtml }}</p>
 <p>Using v-html directive: <span v-html="rawHtml"></span></p>
 ```
 
-#### [Attribute](https://v2.cn.vuejs.org/v2/guide/syntax.html#Attribute)
+### [Attribute](https://v2.cn.vuejs.org/v2/guide/syntax.html#Attribute)
 
  [`v-bind` 指令](https://v2.cn.vuejs.org/v2/api/#v-bind)
 
@@ -252,7 +252,7 @@ new Vue({
 
 如果 `isButtonDisabled` 的值是 `null`、`undefined` 或 `false`，则 `disabled` attribute 甚至不会被包含在渲染出来的<button> 元素中。
 
-#### [使用 JavaScript 表达式](https://v2.cn.vuejs.org/v2/guide/syntax.html#使用-JavaScript-表达式)
+### [使用 JavaScript 表达式](https://v2.cn.vuejs.org/v2/guide/syntax.html#使用-JavaScript-表达式)
 
 <div v-bind:id="'list-' + id"></div>
 
@@ -276,9 +276,9 @@ new Vue({
 {{ if (ok) { return message } }}
 ```
 
-#### [指令](https://v2.cn.vuejs.org/v2/guide/syntax.html#指令)
+### [指令](https://v2.cn.vuejs.org/v2/guide/syntax.html#指令)
 
-##### v-if
+#### v-if
 
 ```
 <p v-if="seen">现在你看到我了</p>
@@ -286,7 +286,7 @@ new Vue({
 
 这里，`v-if` 指令将根据表达式 `seen` 的值的真假来插入/移除 <p> 元素。
 
-#### [参数](https://v2.cn.vuejs.org/v2/guide/syntax.html#参数)
+### [参数](https://v2.cn.vuejs.org/v2/guide/syntax.html#参数)
 
 一些指令能够接收一个“参数”，在指令名称之后以冒号表示。例如，`v-bind` 指令可以用于响应式地更新 HTML attribute：
 
@@ -304,7 +304,7 @@ new Vue({
 
 在这里参数是监听的事件名。我们也会更详细地讨论事件处理。
 
-#### [动态参数](https://v2.cn.vuejs.org/v2/guide/syntax.html#动态参数)
+### [动态参数](https://v2.cn.vuejs.org/v2/guide/syntax.html#动态参数)
 
 2.6.0 新增
 
