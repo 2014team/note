@@ -3393,11 +3393,208 @@ Vue的实例对象，以后简称vm.
 
 ![image-20240807170032470](upload\image-20240807170032470.png)
 
+1.一个重业的内置关系:Vuecomponent.prototype.proto=== Vue.prototype
+2.为什么要有这个关系:让组件实例对象(ve)可以访问到Vue原型上的属性、方法。
+
+### 单文件组件
+
+创建测试学校组件TestSchool.vue
+
+```vue
+<template>
+    <div class="demo">
+        <h2>学校名称：{{name}}</h2>
+        <h2>学校地址：{{address}}</h2>
+    </div>
+
+</template>
+
+<script>
+    export default {
+        name:'TestSchool',
+        data() {
+            return {
+                name: '深圳大学',
+                address: '广东省深圳市'
+            }
+        }
+    }
+
+</script>
+
+<style>
+    .demo{
+        background-color: antiquewhite;
+    }
+
+</style>
+```
+
+创建测试学生组件TestStudent.vue
+
+```vue
+<template>
+    <div>
+        <h2>学生名称：{{name}}</h2>
+        <h2>学生年龄：{{age}}</h2>
+    </div>
+</template>
+
+<script>
+    export default {
+        name:'TestStudent',
+        data() {
+            return {
+                name: '深圳大学',
+                age: 19
+            }
+        }
+    }
+
+</script>
+
+```
+
+App.vue
+
+```vue
+<template>
+  <div id="app">
+    <img alt="Vue logo" src="./assets/logo.png">
+    <TestSchool/>
+    <TestStudent/>
+  </div>
+</template>
+
+<script>
+
+import TestSchool from './components/TestSchool.vue'
+import TestStudent from './components/TestStudent.vue'
+
+export default {
+  name: 'App',
+  components: {
+    TestSchool,
+    TestStudent
+  }
+}
+</script>
+
+
+
+```
+
+main.js
+
+```js
+//引入Vue
+import Vue from 'vue'
+//引入App组件，它是所有组件的父组件
+import App from './App.vue'
+//关闭vue的生产提示
+Vue.config.productionTip = false
+
+//创建Vue实例对象---vm
+new Vue({
+  //将App组件放入容器中
+  render: h => h(App),
+}).$mount('#app')
+
+```
+
+index.html
+
+```html
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+    <!--针对IE浏览器的一个特殊配置，含义是让IE浏览器以最高的渲染级别渲染页面 -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!--开启移动端的理想视口-->
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--配置页签图标-->
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+    <!--配置网页标题 -->
+    <title><%= htmlWebpackPlugin.options.title %></title>
+  </head>
+  <body>
+
+  <!--当浏览器不支持js时noscript中的元素就会被渲染-->
+    <noscript>
+      <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+    </noscript>
+    <div id="app"></div>
+    <!-- built files will be auto injected -->
+  </body>
+</html>
+
+```
+
+
+
+## 创建脚手架
+
+**说明**
+
+Vue脚手架是Vue官网提供的标准开发工具（开发平台）
+
+文档: https://cli.vuejs.org/zh/
+
+![image-20240808141652090](upload\image-20240808141652090.png)
+
+![image-20240808141713873](upload\image-20240808141713873.png)
+
+
+
+![image-20240808141734840](upload\image-20240808141734840.png)
+
+**具体步骤**
+
+设置镜像，下载缓慢请配置 npm 淘宝镜像
+
+**前提**
+
+npm config set registry https://registry.npmmirror.com
+
+![image-20240808141835840](upload\image-20240808141835840.png)
+
+**第一步(仅第一次执行):全局安装@vue/cli**
+npm install -g @vue/cli
+
+![image-20240808141855666](upload\image-20240808141855666.png)
+
+**第二步:切换到你要创建项目的目录，然后使用命令创建项目**
+vue create 项目名称
+
+示例：
+
+![image-20240808141950464](upload\image-20240808141950464.png)
+
+**第三步:启动项目**
+npm run serve
+
+![image-20240808142426250](upload\image-20240808142426250.png)
+
+浏览器访问http://localhost:8080/
+
+备注:
+1.如出现下载缓慢请配置 npm 淘宝镜像
+
+npm config set registry https://registry.npmmirror.com
+
+2.Vue 脚手架隐藏了所有 webpack相关的配置，若想查看具体的 webpakc 配查，请执
+行:vue inspect > output.js
 
 
 
 
-## Vue-cli
+
+
+
+
+
+
 
 
 
