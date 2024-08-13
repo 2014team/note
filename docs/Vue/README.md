@@ -4046,7 +4046,7 @@ npm i less-loader@8
 
 7. 注意：通过`this.$refs.xxx.$on('atguigu',回调)`绑定自定义事件时，回调要么配置在methods中，要么用箭头函数，否则this指向会出问题！
 
-### 全局事件总线（GlobalEventBus）
+### 全局事件总线（GlobalEventBis）
 
 1. 一种组件间通信的方式，适用于任意组件间通信。
 
@@ -4084,7 +4084,7 @@ npm i less-loader@8
 
 4. 最好在beforeDestroy钩子中，用$off去解绑当前组件所用到的事件。
 
-### 消息订阅与发布（pubsub）
+### 消息定于与发布（pubsub）
 
 1. 一种组件间通信的方式，适用于任意组件间通信。
 
