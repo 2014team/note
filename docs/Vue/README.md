@@ -3932,7 +3932,7 @@ TestSchool.vue
 
 4. 使用插件：`Vue.use()`
 
-### scoped样式
+### scoperd样式
 
 查看插件版本
 
@@ -4086,8 +4086,6 @@ npm i less-loader@8
 
 ### 消息订阅与发布（pubsub）
 
-
-
 1. 一种组件间通信的方式，适用于任意组件间通信。
 
 2. 使用步骤：
@@ -4115,8 +4113,6 @@ npm i less-loader@8
    5. 最好在beforeDestroy钩子中，用`PubSub.unsubscribe(pid)`去取消订阅。
 
 ### nextTick
-
-
 
 1. 语法：`this.$nextTick(回调函数)`
 2. 作用：在下一次 DOM 更新结束后执行其指定的回调。
