@@ -1,5 +1,3 @@
-第一章核心
-
 ## Vue简介
 
 Vue.js 是一个用于构建用户界面的渐进式 JavaScript 框架。
@@ -3541,13 +3539,13 @@ Vue脚手架是Vue官网提供的标准开发工具（开发平台）
 
 文档: https://cli.vuejs.org/zh/
 
-![image-20240808141652090](upload\image-20240808141652090.png)
+![image-20240808141652090](upload/image-20240808141652090.png)
 
-![image-20240808141713873](upload\image-20240808141713873.png)
+![image-20240808141713873](upload/image-20240808141713873.png)
 
 
 
-![image-20240808141734840](upload\image-20240808141734840.png)
+![image-20240808141734840](upload/image-20240808141734840.png)
 
 **具体步骤**
 
@@ -3559,24 +3557,24 @@ Vue脚手架是Vue官网提供的标准开发工具（开发平台）
 
 npm config set registry https://registry.npmmirror.com
 
-![image-20240808141835840](upload\image-20240808141835840.png)
+![image-20240808141835840](upload/image-20240808141835840.png)
 
 **第一步(仅第一次执行):全局安装@vue/cli**
 npm install -g @vue/cli
 
-![image-20240808141855666](upload\image-20240808141855666.png)
+![image-20240808141855666](upload/image-20240808141855666.png)
 
 **第二步:切换到你要创建项目的目录，然后使用命令创建项目**
 vue create 项目名称
 
 示例：
 
-![image-20240808141950464](upload\image-20240808141950464.png)
+![image-20240808141950464](upload/image-20240808141950464.png)
 
 **第三步:启动项目**
 npm run serve
 
-![image-20240808142426250](upload\image-20240808142426250.png)
+![image-20240808142426250](upload/image-20240808142426250.png)
 
 浏览器访问http://localhost:8080/
 
@@ -3590,43 +3588,24 @@ npm config set registry https://registry.npmmirror.com
 
 ### 脚手架文件结构
 
-|——node_modules
-
-|——public
-
-​          |——favicon.ico：页签图标
-
-​          |——index.html：主页面
-
-|——src
-
-​          |——assets：存放静态资源
-
-​					|——logo.png
-
-​          |——components：存放组件
-
-​					|——HelloWorld.vue
-
-​          |——App.vue：汇总所有组件
-
-​          |——main.js：入口文件
-
-|——.gitignore：git版本管制忽略的配置
-
-|——babel.config.js：babel的配置文件
-
-|——jsconfig.json：配置JavaScript项目文件
-
-|——package.json：应用包配置文件
-
-|——package-lock.json：包版本控制文件
-
-|——vue.config.js： 是一个可选的配置文件，如果项目的 (和 `package.json` 同级的) 根目录中存在这个文件，那么它会被 `@vue/cli-service` 自动加载
-
-|——README.md：应用描述文件
-
-
+```
+├── node_modules 
+├── public
+│   ├── favicon.ico: 页签图标
+│   └── index.html: 主页面
+├── src
+│   ├── assets: 存放静态资源
+│   │   └── logo.png
+│   │── component: 存放组件
+│   │   └── HelloWorld.vue
+│   │── App.vue: 汇总所有组件
+│   │── main.js: 入口文件
+├── .gitignore: git版本管制忽略的配置
+├── babel.config.js: babel的配置文件
+├── package.json: 应用包配置文件 
+├── README.md: 应用描述文件
+├── package-lock.json：包版本控制文件
+```
 
 **vue.config.js**
 
@@ -3641,7 +3620,7 @@ npm config set registry https://registry.npmmirror.com
 	打标识:<h1 ref="xxx">.....</h1>或<School ref="xxx"></School>
 	获取:this.$refs.xxx
 
-![image-20240809142859236](upload\image-20240809142859236.png)
+![image-20240809142859236](upload/image-20240809142859236.png)
 
 
 
@@ -3788,7 +3767,7 @@ TestStudent.vue
 </style>
 ```
 
-![image-20240809152730962](upload\image-20240809152730962.png)
+![image-20240809152730962](upload/image-20240809152730962.png)
 
 ### mixin混入
 
@@ -3805,7 +3784,7 @@ methods:{....}
 
 
 
-![](upload\image-20240809163252564.png)
+![](upload/image-20240809163252564.png)
 
 mixin.js
 
@@ -3959,27 +3938,27 @@ npm i less-loader@8
 ```
 
 1. 作用：让样式在局部生效，防止冲突。
-2. 写法：<style scoped>
+   2. 写法：`<style scoped>`
 
 ### 总结TodoList案例
 
 1. 组件化编码流程：
 
-    (1).拆分静态组件：组件要按照功能点拆分，命名不要与html元素冲突。
+   (1).拆分静态组件：组件要按照功能点拆分，命名不要与html元素冲突。
 
-    (2).实现动态组件：考虑好数据的存放位置，数据是一个组件在用，还是一些组件在用：
+   (2).实现动态组件：考虑好数据的存放位置，数据是一个组件在用，还是一些组件在用：
 
-    1).一个组件在用：放在组件自身即可。
+   1).一个组件在用：放在组件自身即可。
 
-    2). 一些组件在用：放在他们共同的父组件上（状态提升）。
+   2). 一些组件在用：放在他们共同的父组件上（状态提升）。
 
-    (3).实现交互：从绑定事件开始。
+   (3).实现交互：从绑定事件开始。
 
 2. props适用于：
 
-    (1).父组件 ==> 子组件 通信
+   (1).父组件 ==> 子组件 通信
 
-    (2).子组件 ==> 父组件 通信（要求父先给子一个函数）
+   (2).子组件 ==> 父组件 通信（要求父先给子一个函数）
 
 3. 使用v-model时要切记：v-model绑定的值不能是props传过来的值，因为props是不可以修改的！
 
@@ -3997,15 +3976,15 @@ npm i less-loader@8
 
    2. `xxxxxStorage.getItem('person');`
 
-       该方法接受一个键名作为参数，返回键名对应的值。
+      该方法接受一个键名作为参数，返回键名对应的值。
 
    3. `xxxxxStorage.removeItem('key');`
 
-       该方法接受一个键名作为参数，并把该键名从存储中删除。
+      该方法接受一个键名作为参数，并把该键名从存储中删除。
 
    4. ` xxxxxStorage.clear()`
 
-       该方法会清空存储中的所有数据。
+      该方法会清空存储中的所有数据。
 
 4. 备注：
 
@@ -4153,16 +4132,3 @@ https://animate.style/
 
 
 
-## Vue-router
-
-
-
-## Vuex
-
-
-
-## element-ui
-
-
-
-## vue3
