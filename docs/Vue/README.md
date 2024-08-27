@@ -4995,3 +4995,21 @@ npm i vuex@3
    1. 地址干净，美观 。
    2. 兼容性和hash模式相比略差。
    3. 应用部署上线时需要后端人员支持，解决刷新页面服务端404的问题。
+
+​    https://www.npmjs.com/package/connect-history-api-fallback
+
+### Vue UI组件库
+
+**移动端**
+
+Vant  https://vant-ui.github.io/vant/#/zh-CN
+
+Cube UI https://didi.github.io/cube-ui/#/zh-CN
+
+Mint UI https://mint-ui.github.io/#!/zh-cn
+
+**移动端**
+
+Elment UI  https://element.eleme.io/#/zh-CN
+
+IView UI https://iviewui.com/
