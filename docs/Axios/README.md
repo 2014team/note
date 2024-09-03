@@ -7,7 +7,7 @@ Axios 是一个基于 Promise 的 HTTP 客户端，可以用于浏览器和 Node
 使用 npm 或 yarn 安装 Axios：
 
 ```
-bash复制代码npm install axios
+npm install axios
 # 或
 yarn add axios
 ```
@@ -17,7 +17,7 @@ yarn add axios
 #### 发起 GET 请求
 
 ```
-javascript复制代码const axios = require('axios');
+const axios = require('axios');
 
 // 发起 GET 请求
 axios.get('https://jsonplaceholder.typicode.com/posts/1')
@@ -32,7 +32,7 @@ axios.get('https://jsonplaceholder.typicode.com/posts/1')
 #### 发起 POST 请求
 
 ```
-javascript复制代码const axios = require('axios');
+const axios = require('axios');
 
 // 发起 POST 请求
 axios.post('https://jsonplaceholder.typicode.com/posts', {
@@ -51,7 +51,7 @@ axios.post('https://jsonplaceholder.typicode.com/posts', {
 ### 设置请求头
 
 ```
-javascript复制代码const axios = require('axios');
+const axios = require('axios');
 
 // 设置请求头
 axios.get('https://jsonplaceholder.typicode.com/posts/1', {
@@ -72,7 +72,7 @@ axios.get('https://jsonplaceholder.typicode.com/posts/1', {
 可以创建一个 Axios 实例来自定义配置。
 
 ```
-javascript复制代码const axios = require('axios');
+const axios = require('axios');
 
 // 创建 Axios 实例
 const instance = axios.create({
@@ -96,7 +96,7 @@ instance.get('/posts/1')
 Axios 提供了拦截器，可以在请求或响应被 then 或 catch 处理前拦截它们。
 
 ```
-javascript复制代码const axios = require('axios');
+const axios = require('axios');
 
 // 添加请求拦截器
 axios.interceptors.request.use(config => {
@@ -129,7 +129,7 @@ axios.get('https://jsonplaceholder.typicode.com/posts/1')
 可以使用 `CancelToken` 来取消请求。
 
 ```
-javascript复制代码const axios = require('axios');
+const axios = require('axios');
 const CancelToken = axios.CancelToken;
 let cancel;
 
@@ -156,7 +156,7 @@ cancel('Operation canceled by the user.');
 可以在默认配置中设置全局配置选项。
 
 ```
-javascript复制代码const axios = require('axios');
+const axios = require('axios');
 
 // 设置全局配置
 axios.defaults.baseURL = 'https://jsonplaceholder.typicode.com';
@@ -178,7 +178,7 @@ axios.get('/posts/1')
 Axios 支持 async/await 语法，使得异步代码更加简洁。
 
 ```
-javascript复制代码const axios = require('axios');
+const axios = require('axios');
 
 async function fetchData() {
   try {
@@ -207,7 +207,7 @@ fetchData();
 以下是一个使用 Axios 进行 GET 和 POST 请求的完整示例：
 
 ```
-javascript复制代码const axios = require('axios');
+const axios = require('axios');
 
 // 发起 GET 请求
 axios.get('https://jsonplaceholder.typicode.com/posts/1')

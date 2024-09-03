@@ -11,7 +11,7 @@
 当使用构造函数创建一个对象时，这个对象会继承构造函数的 `prototype` 属性。
 
 ```
-javascript复制代码function Person(name) {
+function Person(name) {
   this.name = name;
 }
 
@@ -30,7 +30,7 @@ alice.greet(); // 输出: Hello, Alice
 原型链是指对象与其原型之间的链式结构。通过这种结构，一个对象可以继承其他对象的属性和方法。访问一个对象的属性时，如果该对象没有这个属性，JavaScript 引擎会沿着原型链向上查找，直到找到该属性或到达原型链的顶端（即 `Object.prototype`）。
 
 ```
-javascript复制代码function Animal() {
+function Animal() {
   this.species = 'animal';
 }
 
@@ -63,7 +63,7 @@ bingo.walk(); // 输出: dog is walking.
 - **`__proto__` 属性**：所有对象都有一个 `__proto__` 属性，指向其原型。
 
   ```
-  javascript复制代码console.log(bingo.__proto__ === Dog.prototype); // 输出: true
+  console.log(bingo.__proto__ === Dog.prototype); // 输出: true
   console.log(Dog.prototype.__proto__ === Animal.prototype); // 输出: true
   ```
 
@@ -80,7 +80,7 @@ bingo.walk(); // 输出: dog is walking.
 所有对象的原型链最终都会指向 `Object.prototype`，这是原型链的顶端。`Object.prototype` 上的方法和属性对所有对象可用，比如 `toString`、`hasOwnProperty` 等。
 
 ```
-javascript复制代码console.log(Object.getPrototypeOf(Dog.prototype) === Animal.prototype); // 输出: true
+console.log(Object.getPrototypeOf(Dog.prototype) === Animal.prototype); // 输出: true
 console.log(Object.getPrototypeOf(Animal.prototype) === Object.prototype); // 输出: true
 console.log(Object.getPrototypeOf(Object.prototype) === null); // 输出: true
 ```

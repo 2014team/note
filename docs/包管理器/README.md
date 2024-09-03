@@ -15,7 +15,7 @@
    - 命令示例：
 
      ```
-     bash复制代码# 初始化一个新的项目
+     # 初始化一个新的项目
      npm init
      # 安装一个包
      npm install <package-name>
@@ -32,7 +32,7 @@
    - 命令示例：
 
      ```
-     bash复制代码# 初始化一个新的项目
+     # 初始化一个新的项目
      yarn init
      # 安装一个包
      yarn add <package-name>
@@ -49,7 +49,7 @@
    - 命令示例：
 
      ```
-     bash复制代码# 初始化一个新的项目
+     # 初始化一个新的项目
      pnpm init
      # 安装一个包
      pnpm add <package-name>
@@ -68,7 +68,7 @@
    - 命令示例：
 
      ```
-     bash复制代码# 安装一个包
+     # 安装一个包
      pip install <package-name>
      # 卸载一个包
      pip uninstall <package-name>
@@ -83,7 +83,7 @@
    - 命令示例：
 
      ```
-     bash复制代码# 创建一个新的环境
+     # 创建一个新的环境
      conda create -n myenv
      # 激活一个环境
      conda activate myenv
@@ -102,7 +102,7 @@
    - 命令示例：
 
      ```
-     bash复制代码# 安装一个包
+     # 安装一个包
      gem install <package-name>
      # 卸载一个包
      gem uninstall <package-name>
@@ -119,7 +119,7 @@
    - 命令示例：
 
      ```
-     bash复制代码# 编译项目
+     # 编译项目
      mvn compile
      # 安装依赖
      mvn install
@@ -134,7 +134,7 @@
    - 命令示例：
 
      ```
-     bash复制代码# 编译项目
+     # 编译项目
      gradle build
      # 安装依赖
      gradle dependencies
@@ -151,7 +151,7 @@
    - 命令示例：
 
      ```
-     bash复制代码# 初始化一个新的项目
+     # 初始化一个新的项目
      composer init
      # 安装一个包
      composer require <package-name>

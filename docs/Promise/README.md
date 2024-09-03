@@ -11,7 +11,7 @@ Promise 是 JavaScript 中用于处理异步操作的对象。Promise 代表一�
 你可以通过 `new Promise` 构造函数创建一个 Promise。它接收一个执行函数，执行函数有两个参数：`resolve` 和 `reject`。你可以调用 `resolve` 来将 Promise 状态变为成功，或者调用 `reject` 来将状态变为失败。
 
 ```
-javascript复制代码const myPromise = new Promise((resolve, reject) => {
+const myPromise = new Promise((resolve, reject) => {
   const success = true; // 这是一个示例条件
 
   if (success) {
@@ -31,7 +31,7 @@ Promise 对象的主要方法有 `then`、`catch` 和 `finally`。这些方法�
 - **`finally`**：无论成功还是失败，都会执行。
 
 ```
-javascript复制代码myPromise
+myPromise
   .then(result => {
     console.log(result); // 输出: Operation was successful!
   })
@@ -48,7 +48,7 @@ javascript复制代码myPromise
 你可以链式调用 `then` 和 `catch` 方法来处理一系列的异步操作。
 
 ```
-javascript复制代码const promise = new Promise((resolve, reject) => {
+const promise = new Promise((resolve, reject) => {
   setTimeout(() => resolve(1), 1000); // 1 秒后返回结果
 });
 
@@ -76,7 +76,7 @@ Promise 通常用于处理异步 HTTP 请求，例如使用 `fetch` 进行 GET �
 #### GET 请求示例
 
 ```
-javascript复制代码fetch('https://jsonplaceholder.typicode.com/posts/1')
+fetch('https://jsonplaceholder.typicode.com/posts/1')
   .then(response => {
     if (!response.ok) {
       throw new Error('Network response was not ok');
@@ -94,7 +94,7 @@ javascript复制代码fetch('https://jsonplaceholder.typicode.com/posts/1')
 #### POST 请求示例
 
 ```
-javascript复制代码fetch('https://jsonplaceholder.typicode.com/posts', {
+fetch('https://jsonplaceholder.typicode.com/posts', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json'
@@ -124,7 +124,7 @@ javascript复制代码fetch('https://jsonplaceholder.typicode.com/posts', {
 - **`Promise.all`**：当所有给定的 Promise 都已成功或有一个失败时返回结果。
 
   ```
-  javascript复制代码const promise1 = Promise.resolve(3);
+  const promise1 = Promise.resolve(3);
   const promise2 = 42;
   const promise3 = new Promise((resolve, reject) => {
     setTimeout(resolve, 100, 'foo');
@@ -138,7 +138,7 @@ javascript复制代码fetch('https://jsonplaceholder.typicode.com/posts', {
 - **`Promise.race`**：当第一个 Promise 成功或失败时返回结果。
 
   ```
-  javascript复制代码const promise1 = new Promise((resolve, reject) => {
+  const promise1 = new Promise((resolve, reject) => {
     setTimeout(resolve, 500, 'one');
   });
   
@@ -156,7 +156,7 @@ javascript复制代码fetch('https://jsonplaceholder.typicode.com/posts', {
 `async` 和 `await` 是基于 Promise 的语法糖，使得异步代码看起来更像同步代码。`async` 函数始终返回一个 Promise，`await` 关键字用于等待 Promise 完成。
 
 ```
-javascript复制代码async function fetchData() {
+async function fetchData() {
   try {
     const response = await fetch('https://jsonplaceholder.typicode.com/posts/1');
     if (!response.ok) {
