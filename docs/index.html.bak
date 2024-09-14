@@ -7,8 +7,15 @@
   <meta name="description" content="Description">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+ 
+   
+	<!-- 引入 Prism.js 样式 -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism.css">
+	 <!-- 引入 Prism.js 脚本 -->
+   <script src="https://cdn.jsdelivr.net/npm/prismjs/prism.js"></script>
+   
    <!-- 引入 Lightbox CSS -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet">
+ <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet">
 
 
  <style>
@@ -25,6 +32,12 @@
   <div id="app">加载中</div>
   <script>
     window.$docsify = {
+	markdown: {
+		highlight: function(code, lang) {
+		  return Prism.highlight(code, Prism.languages[lang], lang);
+		}
+	  },
+
 	loadNavbar: true, //-- https://docsify.js.org/#/custom-navbar 自定义目录
 	//repo: 'https://2014team.github.io/note/',
 	alias: {

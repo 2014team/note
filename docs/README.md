@@ -42,6 +42,8 @@
 
 ## [Html4](/Html4/)
 
+## [CSS2](/CSS2/)
+
 # 后端笔记
 
 ## [Java](/java/)
