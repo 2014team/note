@@ -1138,7 +1138,7 @@ Vue中的watch默认不监测对象内部值的改变(一层)
 </html>
 ```
 
-### watch与omputed比较
+### watch与computed比较
 
 computed和watch之间的区别:
 computed能完成的功能，watch都可以完成。
