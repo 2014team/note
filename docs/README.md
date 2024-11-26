@@ -52,6 +52,8 @@
 
 # 后端笔记
 
+## [RabbitMQ](/RabbitMQ/)
+
 ## [Java](/java/)
 
 ## [Nginx](/Nginx/)
