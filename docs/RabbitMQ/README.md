@@ -1261,7 +1261,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 /**
- * @author zjw
+ * @author zzq
  * @description
  * @date 2022/2/8 20:03
  */
@@ -1324,7 +1324,7 @@ import org.junit.Test;
 import java.io.IOException;
 
 /**
- * @author zjw
+ * @author zzq
  * @description
  * @date 2022/1/24 23:02
  */
@@ -1370,6 +1370,8 @@ public class Consumer {
 }
 ```
 
+​	
+
 ### 五、SpringBoot操作RabbitMQ
 
 ---
@@ -1390,59 +1392,59 @@ public class Consumer {
   ```yml
   spring:
     rabbitmq:
-      host: 192.168.11.32
+      host: 127.0.0.1
       port: 5672
       username: guest
       password: guest
       virtual-host: /
-  
   ```
 - 声明交换机&队列
 
-  ```java
-  package com.mashibing.rabbitmqboot.config;
-  
-  import org.springframework.amqp.core.*;
-  import org.springframework.context.annotation.Bean;
-  import org.springframework.context.annotation.Configuration;
-  
-  /**
-   * @author zjw
-   * @description
-   * @date 2022/2/8 20:25
-   */
-  @Configuration
-  public class RabbitMQConfig {
-  
-      public static final String EXCHANGE = "boot-exchange";
-      public static final String QUEUE = "boot-queue";
-      public static final String ROUTING_KEY = "*.black.*";
 
-
-      @Bean
-      public Exchange bootExchange(){
-          // channel.DeclareExchange
-          return ExchangeBuilder.topicExchange(EXCHANGE).build();
-      }
-    
-      @Bean
-      public Queue bootQueue(){
-          return QueueBuilder.durable(QUEUE).build();
-      }
-    
-      @Bean
-      public Binding bootBinding(Exchange bootExchange,Queue bootQueue){
-          return BindingBuilder.bind(bootQueue).to(bootExchange).with(ROUTING_KEY).noargs();
-      }
-  }
-  ```
-
-#### 5.2 生产者操作
 
 ```java
-package com.mashibing.rabbitmqboot;
+package com.zzq.rabbitmq.rabbitmqspringboot.config;
 
-import com.mashibing.rabbitmqboot.config.RabbitMQConfig;
+import org.springframework.amqp.core.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * @author zzq
+ * @description
+ * @date 2022/2/8 20:25
+ */
+@Configuration
+public class RabbitMQConfig {
+
+    public static final String EXCHANGE = "boot-exchange";
+    public static final String QUEUE = "boot-queue";
+    public static final String ROUTING_KEY = "*.black.*";
+
+
+    @Bean
+    public Exchange bootExchange(){
+        // channel.DeclareExchange
+        return ExchangeBuilder.topicExchange(EXCHANGE).build();
+    }
+
+    @Bean
+    public Queue bootQueue(){
+        return QueueBuilder.durable(QUEUE).build();
+    }
+
+    @Bean
+    public Binding bootBinding(Exchange bootExchange,Queue bootQueue){
+        return BindingBuilder.bind(bootQueue).to(bootExchange).with(ROUTING_KEY).noargs();
+    }
+}
+```
+####   5.2 生产者操作
+
+  ```
+package com.zzq.rabbitmq.rabbitmqspringboot.producer;
+
+import com.zzq.rabbitmq.rabbitmqspringboot.config.RabbitMQConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.Message;
@@ -1452,7 +1454,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 /**
- * @author zjw
+ * @author zzq
  * @description
  * @date 2022/2/8 21:05
  */
@@ -1486,21 +1488,18 @@ public class PublisherTest {
 #### 5.3 消费者操作
 
 ```java
-package com.mashibing.rabbitmqboot;
+package com.zzq.rabbitmq.rabbitmqspringboot.comsumer;
 
-import com.mashibing.rabbitmqboot.config.RabbitMQConfig;
 import com.rabbitmq.client.Channel;
-import org.junit.jupiter.api.Test;
+import com.zzq.rabbitmq.rabbitmqspringboot.config.RabbitMQConfig;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
 /**
- * @author zjw
+ * @author zzq
  * @description
  * @date 2022/2/8 21:11
  */
@@ -1515,7 +1514,6 @@ public class ConsumeListener {
         channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);
     }
 }
-
 ```
 
 ### 六、RabbitMQ保证消息可靠性
