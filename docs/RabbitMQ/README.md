@@ -1574,7 +1574,7 @@ AMQP.BasicProperties props = new AMQP.BasicProperties()
     .deliveryMode(2)
     .build();
 
-//7. 发布消息
+//8. 发布消息
 channel.basicPublish("","confirms",true,props,message.getBytes());
 ```
 
@@ -1680,14 +1680,14 @@ public void publishWithBasicProperties() throws IOException {
 ##### 7.2.1 准备Exchange&Queue
 
 ```java
-                                             package com.mashibing.rabbitmqboot.config;
+package com.zzq.rabbitmq.rabbitmqspringboot.config;
 
 import org.springframework.amqp.core.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * @author zjw
+ * @author zzq
  * @description
  * @date 2022/2/10 15:04
  */
@@ -1742,10 +1742,10 @@ public class DeadLetterConfig {
 - 基于消费者进行reject或者nack实现死信效果
 
   ```java
-  package com.mashibing.rabbitmqboot;
+  package com.zzq.rabbitmq.rabbitmqspringboot.comsumer;
   
-  import com.mashibing.rabbitmqboot.config.DeadLetterConfig;
   import com.rabbitmq.client.Channel;
+  import com.zzq.rabbitmq.rabbitmqspringboot.config.DeadLetterConfig;
   import org.springframework.amqp.core.Message;
   import org.springframework.amqp.rabbit.annotation.RabbitListener;
   import org.springframework.stereotype.Component;
@@ -1753,7 +1753,7 @@ public class DeadLetterConfig {
   import java.io.IOException;
   
   /**
-   * @author zjw
+   * @author zzq
    * @description
    * @date 2022/2/10 15:17
    */
@@ -1763,11 +1763,58 @@ public class DeadLetterConfig {
       @RabbitListener(queues = DeadLetterConfig.NORMAL_QUEUE)
       public void consume(String msg, Channel channel, Message message) throws IOException {
           System.out.println("接收到normal队列的消息：" + msg);
+          //二选一
           channel.basicReject(message.getMessageProperties().getDeliveryTag(),false);
           channel.basicNack(message.getMessageProperties().getDeliveryTag(),false,false);
       }
   }
   ```
+  
+  发送消息：
+  
+  ```java
+  package com.zzq.rabbitmq.rabbitmqspringboot.producer;
+  
+  import com.zzq.rabbitmq.rabbitmqspringboot.config.DeadLetterConfig;
+  import com.zzq.rabbitmq.rabbitmqspringboot.config.RabbitMQConfig;
+  import org.junit.jupiter.api.Test;
+  import org.springframework.amqp.AmqpException;
+  import org.springframework.amqp.core.Message;
+  import org.springframework.amqp.core.MessageDeliveryMode;
+  import org.springframework.amqp.core.MessagePostProcessor;
+  import org.springframework.amqp.core.ReturnedMessage;
+  import org.springframework.amqp.rabbit.connection.CorrelationData;
+  import org.springframework.amqp.rabbit.core.RabbitTemplate;
+  import org.springframework.beans.factory.annotation.Autowired;
+  import org.springframework.boot.test.context.SpringBootTest;
+  
+  import java.io.IOException;
+  
+  /**
+   * @author zzq
+   * @description
+   * @date 2022/2/8 21:05
+   */
+  @SpringBootTest
+  public class deadPublisherTest {
+  
+      @Autowired
+      public RabbitTemplate rabbitTemplate;
+  
+      @Test
+      public void publish(){
+          String msg = "dead letter";
+          rabbitTemplate.convertAndSend(DeadLetterConfig.NORMAL_EXCHANGE,"normal.abc",msg);
+          System.out.println("消息发送成功");
+      }
+  
+  
+  
+  }
+  ```
+  
+  
+  
 - 消息的生存时间
 
   - 给消息设置生存时间
@@ -1793,10 +1840,11 @@ public class DeadLetterConfig {
         return QueueBuilder.durable(NORMAL_QUEUE)
                 .deadLetterExchange(DEAD_EXCHANGE)
                 .deadLetterRoutingKey("dead.abc")
-                .ttl(10000)
+                .ttl(10000) //设置队列中消息的生存时间
                 .build();
     }
     ```
+  
 - 设置Queue中的消息最大长度
 
   ```java
@@ -1805,7 +1853,7 @@ public class DeadLetterConfig {
       return QueueBuilder.durable(NORMAL_QUEUE)
               .deadLetterExchange(DEAD_EXCHANGE)
               .deadLetterRoutingKey("dead.abc")
-              .maxLength(1)
+              .maxLength(1) //设置队列中可以存储的最大消息数量
               .build();
   }
   ```
@@ -1814,14 +1862,28 @@ public class DeadLetterConfig {
 
 #### 7.3 延迟交换机
 
-下载地址：https://github.com/rabbitmq/rabbitmq-delayed-message-exchange/releases/tag/3.8.9
+延迟交换机：https://github.com/rabbitmq/rabbitmq-delayed-message-exchange/releases
+
+下载插件
+
+![image-20241201235603609](upload/image-20241201235603609.png)
+
+加载插件到容器，并且重新启动rabbitmq容器
+
+![image-20241202000815142](upload/image-20241202000815142.png)
+
+效果：
+
+![image-20241202000924951](/Users/zhuzeqing/Desktop/github/note/docs/RabbitMQ/upload/image-20241202000924951.png)
+
+
 
 死信队列实现延迟消费时，如果延迟时间比较复杂，比较多，直接使用死信队列时，需要创建大量的队列还对应不同的时间，可以采用延迟交换机来解决这个问题。
 
 - 构建延迟交换机
 
   ```java
-  package com.mashibing.rabbitmqboot.config;
+  package com.zzq.rabbitmq.rabbitmqspringboot.comsumer;
   
   import org.springframework.amqp.core.*;
   import org.springframework.context.annotation.Bean;
@@ -1831,7 +1893,7 @@ public class DeadLetterConfig {
   import java.util.Map;
   
   /**
-   * @author zjw
+   * @author zzq
    * @description
    */
   @Configuration
@@ -1863,9 +1925,9 @@ public class DeadLetterConfig {
 - 发送消息
 
   ```java
-  package com.mashibing.rabbitmqboot;
+  package com.zzq.rabbitmq.rabbitmqspringboot.producer;
   
-  import com.mashibing.rabbitmqboot.config.DelayedConfig;
+  import com.zzq.rabbitmq.rabbitmqspringboot.comsumer.DelayedConfig;
   import org.junit.jupiter.api.Test;
   import org.springframework.amqp.AmqpException;
   import org.springframework.amqp.core.Message;
@@ -1875,7 +1937,7 @@ public class DeadLetterConfig {
   import org.springframework.boot.test.context.SpringBootTest;
   
   /**
-   * @author zjw
+   * @author zzq
    * @description
    */
   @SpringBootTest
@@ -1889,7 +1951,7 @@ public class DeadLetterConfig {
           rabbitTemplate.convertAndSend(DelayedConfig.DELAYED_EXCHANGE, "delayed.abc", "xxxx", new MessagePostProcessor() {
               @Override
               public Message postProcessMessage(Message message) throws AmqpException {
-                  message.getMessageProperties().setDelay(30000);
+                  message.getMessageProperties().setDelayLong(5000L);
                   return message;
               }
           });
