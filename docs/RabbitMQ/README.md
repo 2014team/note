@@ -731,9 +731,9 @@ public class Consumer2 {
 
 #### 4.5 Publish/Subscribe
 
-|                                                            自定义一个交换机                                                            |
-| :------------------------------------------------------------------------------------------------------------------------------------: |
-| ![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/2746/1642502600000/82e4111651154c3c82ea003ecc7c2ad2.png)  |
+|                     自定义一个交换机                      |
+| :-------------------------------------------------------: |
+| ![image.png](upload/82e4111651154c3c82ea003ecc7c2ad2.png) |
 
 生产者：自行构建Exchange并绑定指定队列[（FANOUT类型）]()
 
@@ -1065,9 +1065,9 @@ public class Consumer {
 
 #### 4.7 Topic
 
-|                                                               Topic模式                                                               |
-| :------------------------------------------------------------------------------------------------------------------------------------: |
-| ![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/2746/1642502600000/d5d670ab4cd943219a85b6973354b005.png)  |
+|                         Topic模式                         |
+| :-------------------------------------------------------: |
+| ![image.png](upload/d5d670ab4cd943219a85b6973354b005.png) |
 
 生产者：TOPIC类型可以编写带有特殊意义的routingKey的绑定方式
 
@@ -1244,9 +1244,9 @@ public class Consumer {
 > - replyTo告知Server将相应信息放到哪个队列
 > - correlationId告知Server发送相应消息时，需要携带位置标示来告知Client响应的信息
 
-|                                                                RPC方式                                                                |
-| :------------------------------------------------------------------------------------------------------------------------------------: |
-| ![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/2746/1642502600000/3fc0407cedf6428dacbcc0c69ffa3682.png)  |
+|                          RPC方式                          |
+| :-------------------------------------------------------: |
+| ![image.png](upload/3fc0407cedf6428dacbcc0c69ffa3682.png) |
 
 客户端：
 
@@ -1666,9 +1666,9 @@ public void publishWithBasicProperties() throws IOException {
 
 #### 7.1 什么是死信
 
-|                                                             死信&死信队列                                                             |
-| :-----------------------------------------------------------------------------------------------------------------------------------: |
-| ![1644476424544.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/2746/1642502600000/4b959d1b1b9a474e99dd99c5d5e9763e.png) |
+|                        死信&死信队列                         |
+| :----------------------------------------------------------: |
+| ![1644476424544.png](upload/4b959d1b1b9a474e99dd99c5d5e9763e.png) |
 
 死信队列的应用：
 
@@ -1862,7 +1862,7 @@ public class DeadLetterConfig {
 
 #### 7.3 延迟交换机
 
-延迟交换机：https://github.com/rabbitmq/rabbitmq-delayed-message-exchange/releases
+延迟交换机插件地址：https://github.com/rabbitmq/rabbitmq-delayed-message-exchange/releases
 
 下载插件
 
@@ -1963,13 +1963,204 @@ public class DeadLetterConfig {
 
 RabbitMQ的镜像模式
 
-|                                                            RabbitMQ的集群                                                            |
-| :-----------------------------------------------------------------------------------------------------------------------------------: |
-| ![1644926959251.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/2746/1642502600000/68e14c9292a84e528801bf78ba8102d7.png) |
+|                        RabbitMQ的集群                        |
+| :----------------------------------------------------------: |
+| ![1644926959251.png](upload/68e14c9292a84e528801bf78ba8102d7.png) |
 
 高可用
 
 提升RabbitMQ的效率
+
+#### 8.1、方式一
+
+准备三台虚拟机（克隆）
+
+准备RabbitMQ的yml文件
+
+rabbitmq1： 定义docker-compose.yml文件
+
+```yml
+version: '3.1'
+services:
+  rabbitmq1:
+    image: rabbitmq:4.0-management-alpine
+    container_name: rabbitmq1
+    hostname: rabbitmq1
+    environment:
+      - RABBITMQ_NODENAME=rabbit@rabbitmq1
+      - RABBITMQ_ERLANG_COOKIE=SDJHFGDFFS
+    ports:
+      - 5672:5672
+      - 15672:15672
+      - 4369:4369
+      - 25672:25672
+```
+
+**version**: 这里指定了 Docker Compose 文件的版本。`3.1` 是一个较常用的版本，用于定义服务、网络、卷等内容。在这里，选择 `3.1` 是为了保证兼容性和支持 Docker 的大部分功能
+
+**services**: 定义了 Docker Compose 配置文件中的服务。在这个例子中，我们只有一个服务，名为 `rabbitmq1`。这个服务会启动一个容器运行 RabbitMQ 实例。
+
+**image**: 指定 Docker 镜像，这里使用了 `rabbitmq:4.0-management-alpine`。
+
+- `rabbitmq`: 这是 RabbitMQ 的官方镜像。
+- `4.0-management`: 这表示 RabbitMQ 4.0 版本，并启用了 RabbitMQ 的管理插件（例如：Web UI 管理界面）。
+- `alpine`: 这个标签表示该镜像是基于 `Alpine` Linux 构建的，`Alpine` 是一个轻量级的 Linux 发行版，镜像体积较小
+
+**container_name**: 为容器指定一个自定义名称。这里的容器名称为 `rabbitmq1`，这样在使用 `docker ps` 或 `docker exec` 等命令时，可以通过这个名字来引用该容器。
+
+**hostname**: 设置容器的主机名（hostname）。在这个例子中，容器的主机名是 `rabbitmq1`，这对于集群模式中的节点识别非常重要。
+
+**environment**: 用于设置容器中的环境变量，这里设置了一个名为 `RABBITMQ_NODENAME` 的环境变量。
+
+- `RABBITMQ_NODENAME=rabbit@rabbitmq1`: 这个环境变量设置 RabbitMQ 节点的名称，`rabbit@rabbitmq1` 表示该节点是集群中的一个名为 `rabbit` 的节点，且主机名为 `rabbitmq1`。在集群模式下，每个节点的名称必须是唯一的。
+
+**RABBITMQ_ERLANG_COOKIE**: 这个环境变量定义了 RabbitMQ 节点之间的 Erlang Cookie。Erlang Cookie 是用来确保集群中的节点能相互认证的一个共享密钥。所有集群中的节点必须使用相同的 Erlang Cookie 才能互相通信。这里的值 `SDJHFGDFFS` 是一个示例值，你可以更改为任何你喜欢的值，但要确保在所有节点中都一致。
+
+**ports**: 映射主机端口到容器端口。这些端口使得外部可以访问 RabbitMQ 服务的不同功能。
+
+- `5672:5672`: 这将容器的 `5672` 端口（AMQP 协议端口）映射到主机的 `5672` 端口，用于 RabbitMQ 的消息传输协议。
+
+- `15672:15672`: 这将容器的 `15672` 端口映射到主机的 `15672` 端口，用于访问 RabbitMQ 的管理界面（Web UI）。
+
+- `4369:4369`: 这将容器的 `4369` 端口映射到主机的 `4369` 端口，用于 Erlang 节点发现协议（EPMD）。
+
+- `25672:25672`: 这将容器的 `25672` 端口映射到主机的 `25672` 端口，用于 RabbitMQ 集群节点之间的通信
+
+  
+
+rabbitmq2
+
+```yml
+version: '3.1'
+services:
+  rabbitmq2:
+    image: rabbitmq:4.0-management-alpine
+    container_name: rabbitmq2
+    hostname: rabbitmq2
+    environment:
+      - RABBITMQ_NODENAME=rabbit@rabbitmq2
+      - RABBITMQ_ERLANG_COOKIE=SDJHFGDFFS
+    ports:
+      - 5672:5672
+      - 15672:15672
+      - 4369:4369
+      - 25672:25672
+```
+
+rabbitmq3
+
+```yml
+version: '3.1'
+services:
+  rabbitmq3:
+    image: rabbitmq:4.0-management-alpine
+    container_name: rabbitmq3
+    hostname: rabbitmq3
+    environment:
+      - RABBITMQ_NODENAME=rabbit@rabbitmq3
+      - RABBITMQ_ERLANG_COOKIE=SDJHFGDFFS
+    ports:
+      - 5672:5672
+      - 15672:15672
+      - 4369:4369
+      - 25672:25672
+```
+
+**启动**
+
+启动rabbitmq1：
+
+![image-20241208175929885](upload/image-20241208175929885.png)
+
+启动rabbitmq2：
+
+![image-20241208175825438](upload/image-20241208175825438.png)
+
+启动rabbitmq3：
+
+![image-20241208180141475](upload/image-20241208180141475.png)
+
+**准备完毕之后**
+
+登录默认账号/密码 ：  guest/guest
+
+![image-20241208180404484](upload/image-20241208180404484.png)
+
+
+
+![image-20241208205954476](upload/image-20241208205954476.png)
+
+![image-20241208210102457](upload/image-20241208210102457.png)
+
+**让RabbitMQ服务实现join操作**
+
+让rabbitmq2   join  rabbitmq1
+
+```bash
+# 停止 rabbitmq2 应用
+docker exec -it rabbitmq2 rabbitmqctl stop_app
+
+# 将 rabbitmq2 加入 rabbitmq1 的集群
+docker exec -it rabbitmq2 rabbitmqctl join_cluster rabbit@rabbitmq1
+
+# 启动 rabbitmq2 应用
+docker exec -it rabbitmq2 rabbitmqctl start_app
+```
+
+![image-20241208212550092](upload/image-20241208212550092.png)
+
+
+
+让rabbitmq3   join  rabbitmq1
+
+```
+# 停止 rabbitmq3 应用
+docker exec -it rabbitmq3 rabbitmqctl stop_app
+
+# 将 rabbitmq3 加入 rabbitmq1 的集群
+docker exec -it rabbitmq3 rabbitmqctl join_cluster rabbit@rabbitmq1
+
+# 启动 rabbitmq3 应用
+docker exec -it rabbitmq3 rabbitmqctl start_app
+```
+
+![image-20241208212739305](upload/image-20241208212739305.png)
+
+**执行成功之后**
+
+![image-20241208213204008](upload/image-20241208213204008.png)
+
+![image-20241208213249273](upload/image-20241208213249273.png)
+
+
+
+![image-20241208213334037](upload/image-20241208213334037.png)
+
+
+
+**创建Quorum Queues**
+
+**Classic Queues**：传统队列，适用于大多数场景，但在高可用性和一致性方面有限制。
+
+**Quorum Queues**：推荐的队列类型，使用 Raft 协议，提供高可用性和一致性。
+
+**Stream Queues**：用于高吞吐量消息流处理，适用于日志收集等场景。
+
+**Dead Letter Queues (DLQ)**：用于处理无法消费的消息，确保消息不丢失。
+
+**Priority Queues**：允许设置消息优先级，适用于需要按照优先级处理消息的场景。
+
+
+
+![image-20241208213912428](upload/image-20241208213912428.png)
+
+效果：其中宕机一台服务器，也可以提供服务
+
+![image-20241208214028046](upload/image-20241208214028046.png)
+
+
+
+#### 8.2 、方式二
 
 **搭建RabbitMQ集群**
 
@@ -1982,7 +2173,7 @@ RabbitMQ的镜像模式
   version: '3.1'
   services:
     rabbitmq1:
-      image: rabbitmq:3.8.5-management-alpine
+      image: rabbitmq:4.0-management-alpine
       container_name: rabbitmq1
       hostname: rabbitmq1
       extra_hosts:
@@ -1997,8 +2188,10 @@ RabbitMQ的镜像模式
         - 25672:25672
   ```
 
-  rabbitmq2：
+  
 
+  rabbitmq2：
+  
   ```yml
   version: '3.1'
   services:
@@ -2019,10 +2212,10 @@ RabbitMQ的镜像模式
   ```
 
   准备完毕之后，启动两台RabbitMQ
-
-  |                                                               启动效果                                                               |
-  | :-----------------------------------------------------------------------------------------------------------------------------------: |
-  | ![1644924815935.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/2746/1642502600000/f047925205a9446fa6822945dab02eb5.png) |
+  
+  |                           启动效果                           |
+  | :----------------------------------------------------------: |
+  | ![1644924815935.png](upload/f047925205a9446fa6822945dab02eb5.png) |
 - 让RabbitMQ服务实现join操作
 
   需要四个命令完成join操作
@@ -2034,20 +2227,21 @@ RabbitMQ的镜像模式
   rabbitmqctl reset 
   rabbitmqctl join_cluster rabbit@rabbitmq1
   rabbitmqctl start_app
+  
   ```
-
+  
   执行成功后：
-
-  |                                                              执行成功后                                                              |
-  | :-----------------------------------------------------------------------------------------------------------------------------------: |
-  | ![1644925359203.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/2746/1642502600000/d980f871d229468d925ec556bb72fc43.png) |
+  
+  |                          执行成功后                          |
+  | :----------------------------------------------------------: |
+  | ![1644925359203.png](upload/d980f871d229468d925ec556bb72fc43.png) |
 - 设置镜像模式
 
   在指定的RabbitMQ服务中设置好镜像策略即可
 
-  |                                                               镜像模式                                                               |
-  | :-----------------------------------------------------------------------------------------------------------------------------------: |
-  | ![1644925812667.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/2746/1642502600000/4157a49c99e6426fa24a618d57f48e67.png) |
+  |                           镜像模式                           |
+  | :----------------------------------------------------------: |
+  | ![1644925812667.png](upload/4157a49c99e6426fa24a618d57f48e67.png) |
 
 ### 九、RabbitMQ其他内容
 
@@ -2057,27 +2251,27 @@ headers就是一个基于key-value的方式，让Exchange和Queue绑定的到一
 
 相比Topic形式，可以采用的类型更丰富。
 
-|                                                            headers绑定方式                                                            |
-| :-----------------------------------------------------------------------------------------------------------------------------------: |
-| ![1645705080465.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/2746/1642502600000/530466d70c4f44a586158986c8dd713b.png) |
+|                       headers绑定方式                        |
+| :----------------------------------------------------------: |
+| ![1645705080465.png](upload/530466d70c4f44a586158986c8dd713b.png) |
 
 具体实现方式
 
 ```java
-package com.mashibing.headers;
+package com.zzq.rabbitmq.headers.producer;
 
-import com.mashibing.util.RabbitMQConnectionUtil;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.BuiltinExchangeType;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
+import com.zzq.rabbitmq.util.RabbitMQConnectionUtil;
 import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author zjw
+ * @author zzq
  * @description
  */
 public class Publisher {
@@ -2110,8 +2304,8 @@ public class Publisher {
         //4. 发送消息
         String msg = "header测试消息！";
         Map<String, Object> headers = new HashMap<>();
-        headers.put("name","jac");
-        headers.put("age","2");
+        headers.put("name","jack");
+        headers.put("age","23");
         AMQP.BasicProperties props = new AMQP.BasicProperties()
                 .builder()
                 .headers(headers)
