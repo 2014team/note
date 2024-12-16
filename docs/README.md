@@ -54,6 +54,8 @@
 
 ## [RabbitMQ](/RabbitMQ/)
 
+## [RabbitMQ实战](/RabbitMQ实战/)
+
 ## [Java](/java/)
 
 ## [Nginx](/Nginx/)
