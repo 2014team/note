@@ -588,7 +588,7 @@ public class CouponListener {
         System.out.println("优惠券预扣除成功！" + msg);
         // 手动ACK
         channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
-
+    
     }
 
 }
@@ -621,7 +621,7 @@ spring:
   rabbitmq:
     publisher-confirm-type: correlated #发送失败消息标识
     publisher-returns: true  #return机制开启
-```
+  ```
 
 ##### 2、重新配置RabbitTemplate对象，指定confirm和return的回调处理
 
@@ -919,10 +919,38 @@ CREATE TABLE `user_points_idempotent` (
 
 ##### 3、准备消费方法
 
+接口
+
 ```java
+package com.mashibing.service;
+
+
+import org.springframework.amqp.core.Message;
+
+public interface UserPointsService {
+
+    public void consume(Message message);
+}
+
+```
+
+实现类
+
+```java
+package com.mashibing.service.impl;
+
+import com.mashibing.mapper.UserPointsIdempotentMapper;
+import com.mashibing.service.UserPointsService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.Message;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+
 @Service
 @Slf4j
-public class UserPointsConsumeImpl implements UserPointsConsume {
+public class UserPointsServiceImpl implements UserPointsService {
 
     @Resource
     private UserPointsIdempotentMapper userPointsIdempotentMapper;
@@ -975,12 +1003,13 @@ public class UserPointsConsumeImpl implements UserPointsConsume {
 * 准备表结构
   ```
   CREATE TABLE `tb_order` (
-    `id` varchar(36) NOT NULL AUTO_INCREMENT,
+    `id` varchar NOT NULL ,
     `total` decimal(10,2) DEFAULT NULL,
-    `order_state` int(11) DEFAULT '0' COMMENT '订单状态  0-待支付， 1-已支付，2-待发货，3-已发货，-1-已取消',
+    `order_state` int DEFAULT '0' COMMENT '订单状态  0-待支付， 1-已支付，2-待发货，3-已发货，-1-已取消',
     PRIMARY KEY (`id`)
-  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
   ```
+  
 * 修改订单服务，将之前模拟数据库操作，改为真实的数据库操作
   * 导入依赖
     ```
@@ -999,6 +1028,7 @@ public class UserPointsConsumeImpl implements UserPointsConsume {
         <artifactId>lombok</artifactId>
     </dependency>
     ```
+    
   * 编写配置信息
     ```
     spring:
@@ -1008,13 +1038,15 @@ public class UserPointsConsumeImpl implements UserPointsConsume {
         username: root
         password: root
     ```
+    
   * 启动类添加注解
     ```
     @MapperScan(basePackages = "com.mashibing.mapper")
     ```
+    
   * 实现添加操作
     * 准备Mapper接口
-      ```
+      ```java
       public interface TBOrderMapper {
       
           @Insert("insert into tb_order (id) values (#{id})")
@@ -1022,40 +1054,23 @@ public class UserPointsConsumeImpl implements UserPointsConsume {
       
       }
       ```
+      
     * 准备Service层
-      ```
+      
+      ```java
       @Service
       public class TBOrderServiceImpl implements TBOrderService {
       
-          @Resource
-          private TBOrderMapper orderMapper;
-
-
-          @Override
+           @Override
           public void save() {
-      	String id = UUID.randomUUID().toString();
+              // 生成主键ID
+              String id = UUID.randomUUID().toString();
+              // 创建订单
               orderMapper.save(id);
           }
       }
-      ```
-    * Controller调用Service层
-      ```
-      @RestController
-      @Slf4j
-      public class OrderManageController {
-    
-          @Autowired
-          private TBOrderService orderService;
-    
-          @GetMapping("create")
-          public void create() throws InterruptedException {
-              orderService.save();
-              log.info("创建订单成功！！");
-          }
-    
-      }
-      ```
-    * 测试![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/2746/1679467956009/d616f0bcf9b84552999516e1aaee94c0.png)
+
+
 
 ##### 2、在订单服务中准备死信队列配置
 
@@ -1215,3 +1230,7 @@ public class TBOrderServiceImpl implements TBOrderService {
       void updateOrderStateById(@Param("orderState") int i, @Param("id") String id);
   }
   ```
+
+
+
+代码：https://github.com/2014team/rabbitmq-distributed
