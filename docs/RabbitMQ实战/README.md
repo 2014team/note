@@ -986,7 +986,7 @@ public class UserPointsServiceImpl implements UserPointsService {
 
 ##### 4、测试功能效果
 
-![image.png](https://fynotefile.oss-cn-zhangjiakou.aliyuncs.com/fynote/fyfile/2746/1679467956009/a0063f41ed334d5fbbe85c3ffed6f7e2.png)
+![image.png](upload/a0063f41ed334d5fbbe85c3ffed6f7e2.png)
 
 #### 10.6 实现延迟取消订单状态
 
