@@ -1,6 +1,6 @@
 # 谷粒商城
 
-## 一、微服务架构图
+## *一*、微服务架构图
 
 ![image-20241222225819722](upload/image-20241222225819722.png)
 
@@ -34,8 +34,8 @@ timestamp=1729731029
 [ethernet]
 
 [ipv4]
-address1=192.168.34.150
-dns=192.168.34.2;
+address1=192.168.34.150/24,192.168.34.2
+dns=192.168.34.2
 ignore-auto-dns=true
 ignore-auto-routes=true
 method=manual
@@ -482,7 +482,7 @@ Chinese (Simplified) Language Pack for Visual Studio Code —— 中文语言包
 
 ### 9.1 下载 git
 
-### https://git-scm.com
+https://git-scm.com
 
 ### 9.2、配置 git
 
@@ -501,5 +501,481 @@ git config --global --list：查看全局配置。
 git config --system --list：查看系统配置。
 git config --local --list：查看仓库级配置。
 git config <key>：查询特定的配置项。
+```
+
+### 9.3、配置 ssh 免密登录
+
+https://gitee.com/help/articles/4181#article-header0
+
+进入 git bash；使用：ssh-keygen -t rsa -C "xxxxx@xxxxx.com"命令。 连续三次回车。
+
+一般用户目录下会有
+
+![image-20241229140819275](upload/image-20241229140819275.png)
+
+或者 cat ~/.ssh/id_rsa.pub
+
+登录进入 gitee，在设置里面找到 SSH KEY 将.pub 文件的内容粘贴进去
+
+使用 ssh -T git@gitee.com 测试是否成功即可
+
+Git+码云教程 https://gitee.com/help/articles/4104
+
+## 十、**创建各个微服务项目**
+
+商品服务、仓储服务、订单服务、优惠券服务、用户服务
+
+### 10.1、微服务共同点
+
+1）、web、openfeign
+
+2）、每一个服务，包名 **com.atguigu.gulimall**.xxx(product/order/ware/coupon/member)
+
+3）、模块名：gulimall-coupon
+
+![image-20241229153454065](upload/image-20241229153454065.png)
+
+### 10.2、初始化数据库
+
+![image-20241229164124907](upload/image-20241229164124907.png)
+
+gulimall_admin  后台管理
+
+gulimall_oms   订单服务
+
+gulimall_sms  优惠卷
+
+gulimall_pms 产品服务
+
+gulimall_ums  会员服务
+
+gulimall_wms 仓储服务
+
+
+
+### 10.3、人人开源搭建后天管理系统
+
+https://gitee.com/renrenio
+
+![image-20241229164852988](upload/image-20241229164852988.png)
+
+[renren-fast-vue](https://gitee.com/renrenio/renren-fast-vue)后台系统前端
+
+[renren-fast](https://gitee.com/renrenio/renren-fast)后台系统后端
+
+[renren-generator](https://gitee.com/renrenio/renren-generator)代码生成器
+
+## 十一、项目整合
+
+### 11.1导入依赖
+
+```
+<dependencies>
+        <!--gulimall-common模块-->
+        <dependency>
+            <groupId>com.atguigu.gulimall</groupId>
+            <artifactId>gulimall-common</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-core</artifactId>
+            <version>3.5.10.1</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+```
+
+**gulimall-common模块**
+
+```
+<dependencies>
+     <!--mybatis-plus-->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+            <version>3.5.10.1</version>
+        </dependency>
+
+    <!--lombok-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${projectlombok.version}</version>
+        </dependency>
+
+        <!--httpcore-->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>${httpcore.version}</version>
+        </dependency>
+
+        <!--mysql-->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.version}</version>
+        </dependency>
+
+        <!-- commons-lang3 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons.lang3.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+            <version>${druid.version}</version>
+        </dependency>
+
+    </dependencies>
+
+```
+
+application.xml
+
+```yml
+spring:
+  datasource:
+    url: jdbc:mysql://192.168.34.150:3306/gulimall_pms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver  # 注意 MySQL 8+ 使用此驱动
+    hikari:
+      maximum-pool-size: 10  # 连接池大小，根据需要调整
+      minimum-idle: 5        # 最小空闲连接数
+      idle-timeout: 600000   # 空闲连接最大空闲时间（毫秒）
+      connection-timeout: 30000  # 连接超时时间（毫秒）
+      validation-timeout: 3000  # 验证连接是否有效的超时时间
+  application:
+    name: gulimall-product
+
+mybatis-plus:
+  # MyBatis Plus 配置
+  global-config:
+    db-config:
+      id-type: auto  # 自动生成主键（根据数据库策略）
+  mapper-locations: classpath:mapper/**/*.xml  # 扫描 Mapper XML 文件的位置
+  type-aliases-package: com.atguigu.gulimall.product.entity  # 扫描实体类的包（根据项目实际路径调整）
+
+  # 如果你使用了分页插件
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # 输出SQL日志，方便调试
+
+```
+
+**GulimallWareApplication**
+
+```java
+package com.atguigu.gulimall.ware;
+
+import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@MapperScan("com.atguigu.gulimall.ware.dao") //
+@SpringBootApplication
+public class GulimallWareApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(GulimallWareApplication.class, args);
+    }
+
+}
+
+```
+
+## 十二、SpringCloud Alibaba
+
+
+
+https://github.com/alibaba/spring-cloud-alibaba
+
+创建目录
+
+```
+mkdir -p /mydata/nacos
+```
+
+nacos服务器部署
+
+```
+docker run -d --name nacos -p 8848:8848 \
+  -e MODE=standalone \
+  -e PREFER_HOST_MODE=hostname \
+  -e SPRING_SECURITY_USER_NAME=nacos \
+  -e SPRING_SECURITY_USER_PASSWORD=nacos \
+  -v /mydata/nacos:/home/nacos/data \
+  --restart unless-stopped \
+  nacos/nacos-server
+```
+
+
+
+```
+version: '3.7'
+
+services:
+  nacos:
+    image: nacos/nacos-server:2.5.0
+    container_name: nacos-server
+    environment:
+      - PREFER_HOST_MODE=hostname
+      - MODE=standalone
+      - NACOS_SERVERS=127.0.0.1:8848
+      - SPRING_PROFILES_ACTIVE=dev
+    ports:
+      - "8848:8848"
+    volumes:
+      - /mydata/nacos:/home/nacos/data
+    networks:
+      - nacos-net
+
+networks:
+  nacos-net:
+    driver: bridge
+
+```
+
+打开任意浏览器，输入地址：`http://ip:8848/nacos`，即可进入Nacos控制台页面
+
+docker启动容器自动起来
+
+```
+docker update --restart always 容器名称
+```
+
+说明：
+
+`-d`：在后台运行容器
+
+```
+--name nacos：容器的名称为 nacos
+```
+
+`-p 8848:8848`：将容器的 8848 端口映射到主机的 8848 端口
+
+`-e MODE=standalone`：设置 Nacos 以单机模式运行
+
+`-e PREFER_HOST_MODE=hostname`：Nacos 使用主机名进行识别
+
+`nacos/nacos-server`：使用的镜像
+
+`SPRING_SECURITY_USER_NAME`：设置 Nacos 管理后台的用户名
+
+`SPRING_SECURITY_USER_PASSWORD`：设置 Nacos 管理后台的密码
+
+
+
+### 12.1 连接nacos
+
+pom.xml
+
+```
+!-- Nacos 作为服务注册中心和配置中心 -->
+    <dependency>
+        <groupId>com.alibaba.cloud</groupId>
+        <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+    </dependency>
+
+    <!--nacos 注册中心-->
+    <dependency>
+        <groupId>com.alibaba.cloud</groupId>
+        <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+    </dependency>
+    
+     <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+        </dependency>
+
+
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+            <version>2022.0.0.0</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+```
+
+application.yml文件
+
+```
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.34.150:8848  # Nacos 服务地址
+        namespace: public            # 命名空间（可选）
+        group: DEFAULT_GROUP          # 分组（默认 DEFAULT_GROUP）
+      config:
+        server-addr: 192.168.34.150:8848  # 配置中心地址（如果使用）
+        file-extension: yaml         # 配置文件格式
+  config:
+    import: optional:nacos:${spring.application.name}.${spring.cloud.nacos.config.file-extension}  # 关键配置
+```
+
+GulimallMemberApplication.java
+
+```
+
+@EnableFeignClients(basePackages = "com.atguigu.gulimall.member.feign")
+@MapperScan("com.atguigu.gulimall.member.dao") //
+@EnableDiscoveryClient
+@SpringBootApplication
+public class GulimallMemberApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(GulimallMemberApplication .class, args);
+    }
+
+}
+```
+
+### 12.2 配置中心
+
+**1、依赖**
+
+```
+         <dependency>
+              <groupId>com.alibaba.cloud</groupId>
+              <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+          </dependency>
+ 
+ 
+         <dependency>
+              <groupId>org.springframework.cloud</groupId>
+              <artifactId>spring-cloud-starter-bootstrap</artifactId>
+              <version>3.1.6</version>
+         </dependency>
+```
+
+**2、创建一文件bootstrap.properties**
+
+```
+# 配置中心地址
+spring.application.name=gulimaill-coupon
+spring.cloud.nacos.config.server-addr=192.168.34.150:8848
+spring.cloud.nacos.config.file-extension=yaml
+```
+
+3、配置中心创建 gulimaill-coupon.yaml
+
+![image-20250316223706950](upload/image-20250316223706950.png)
+
+4、新增动态配置
+
+![image-20250316223901683](upload/image-20250316223901683.png)
+
+5、测试
+
+![image-20250316224050015](upload/image-20250316224050015.png)
+
+
+
+![image-20250316224159034](upload/image-20250316224159034.png)
+
+### 12.3 配置中心概念
+
+**命名空间：配置隔离**
+
+默认：public（保留空间）默认新增的所有配置都在public空间
+
+![image-20250316225028620](upload/image-20250316225028620.png)
+
+场景1、开发、测试、生产：利用命名空间来做环境隔离
+
+需要在bootstrap.properties配置
+
+```
+spring.cloud.nacos.config.namespace=d5a2033e-90fc-4468-8260-e51ad22ae761
+```
+
+![image-20250316225848399](upload/image-20250316225848399.png)
+
+场景2每一个微服务之间互相隔离配置，没一个微服务都有创建自己的命名空间，只加载自己命名空间的所有配置
+
+![image-20250316231053401](upload/image-20250316231053401.png)
+
+**配置集：**所有配置的集合
+
+**配置集ID**：类似文件名名
+
+![image-20250316231548232](upload/image-20250316231548232.png)
+
+**配置分组**
+
+默认所有的配置分组都属于：DEFAULT_GROUP
+
+![image-20250316232305784](upload/image-20250316232305784.png)
+
+
+
+![image-20250316232345727](upload/image-20250316232345727.png)
+
+
+
+建议：
+
+每个微服务创建自己的命名空间，使用配置分组区分环境pro、dev、test等
+
+![image-20250316233301178](upload/image-20250316233301178.png)
+
+
+
+![image-20250317000904218](upload/image-20250317000904218.png)
+
+bootstrap.properties配置
+
+```
+# 应用名称
+spring.application.name=gulimaill-coupon
+
+# Nacos 配置中心地址
+spring.cloud.nacos.config.server-addr=192.168.34.150:8848
+spring.cloud.nacos.config.file-extension=yaml
+spring.cloud.nacos.config.namespace=13f03abb-f4f4-4846-b525-827f5c45a4d7
+# spring.cloud.nacos.config.group=dev  # 如果未指定，默认使用 DEFAULT_GROUP
+
+# 扩展配置列表（extension-configs）
+spring.cloud.nacos.config.extension-configs[0].data-id=datasource.yaml
+spring.cloud.nacos.config.extension-configs[0].group=dev
+spring.cloud.nacos.config.extension-configs[0].refresh=true
+
+spring.cloud.nacos.config.extension-configs[1].data-id=mybatis.yaml
+spring.cloud.nacos.config.extension-configs[1].group=dev
+spring.cloud.nacos.config.extension-configs[1].refresh=true
+
+spring.cloud.nacos.config.extension-configs[2].data-id=nacos.yaml
+spring.cloud.nacos.config.extension-configs[2].group=dev
+spring.cloud.nacos.config.extension-configs[2].refresh=true
+
+spring.cloud.nacos.config.extension-configs[3].data-id=other.yaml
+spring.cloud.nacos.config.extension-configs[3].group=dev
+spring.cloud.nacos.config.extension-configs[3].refresh=true
 ```
 
